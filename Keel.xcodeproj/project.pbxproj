@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04FDF137DC937C3332E8DBCB /* StrengthChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C00BA92CBF755EC821F335 /* StrengthChartView.swift */; };
+		071B8E2CD012305945E313B3 /* SubstitutionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1726D62C6008265835EC168E /* SubstitutionSheet.swift */; };
+		0DA31F407CC6E1DE640C1B7F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F0FAC66DFFE45AA1E9E8D /* ContentView.swift */; };
+		14063A258479A277372100D7 /* AddOneRMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581EBA0AF0297652D1B1C0B0 /* AddOneRMView.swift */; };
+		16EB106AC4D22A504AD418EA /* TemplateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B290A805BE733536765A78F /* TemplateListView.swift */; };
+		2246EADBB4E8DD9B1AD29071 /* TimeRangePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239202085E333BFDC6D83DC6 /* TimeRangePicker.swift */; };
+		25A129BB010B91B805772D7F /* ExerciseFilterPills.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8FFD0D93CFBBCB41950674C /* ExerciseFilterPills.swift */; };
+		2741EAD8B1FA80D56E46270B /* KeelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACCE1202BCC4A91FFEE4951 /* KeelApp.swift */; };
+		30C53681FDDA9423A056C277 /* KeelTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA5B641D4C93F5E6F3938C2 /* KeelTheme.swift */; };
+		36EE50C789C01184A4754EB7 /* WorkoutSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9425BA18C0296B7C2B5AC82D /* WorkoutSessionService.swift */; };
+		3AA81895D50289A4D058F06E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB9F51008F5680B7967B16CD /* Assets.xcassets */; };
+		3E588B0AF7B1933120791786 /* CardioLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54344C76BB2B2A4DC08E0EB0 /* CardioLog.swift */; };
+		409465258993D2B23DBF4D9E /* SetLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB2C7FB779ABE9F59AB5FAD /* SetLog.swift */; };
+		4909427D85362BE6718E7FD8 /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6887C71C7C6493C82498C7D3 /* Exercise.swift */; };
+		4F90858CE95AF5B6A795C8B6 /* BodyCompView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8AAFA819F5896BF69B3FC6 /* BodyCompView.swift */; };
+		54BBB5E0D9264BBC2600AECC /* RestTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31867EB6282F62F2C65A4E76 /* RestTimerView.swift */; };
+		652DF05AAE2CF4C705FF05A8 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA7180F043CEAC48F845F23 /* TodayView.swift */; };
+		692A2C3DB0E8150D52AFB297 /* PlateCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20797B54294EB1E59D197725 /* PlateCalculatorView.swift */; };
+		70B6F0443C4CCE3A130E8D93 /* ProgramBuilderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E38A104C90BBAB01FA0676 /* ProgramBuilderView.swift */; };
+		773126A0CBDDB52850BAB1E3 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F1B9F74BA845A4DF4FFCE3 /* ProgressView.swift */; };
+		799FEF6012CE3A6BAAF4B298 /* Program.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73AEC2E7050E38723A718CFD /* Program.swift */; };
+		7BB8CD263FB78E47F35DA4B0 /* ProgramOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7090761EA78FED08AF01D2C /* ProgramOverviewView.swift */; };
+		8AD6D64EF117756AFDCB2C86 /* LiveWorkoutBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2C758CBB824225911E73A4 /* LiveWorkoutBanner.swift */; };
+		8C69D058BF3D16402153F193 /* ExerciseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00B843133CD784E0A2B15F4 /* ExerciseCardView.swift */; };
+		A4C308516BE7D313379593F0 /* BodyComposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DD98AD186D93DF30805692 /* BodyComposition.swift */; };
+		B05CD3CEBCA11945D5846309 /* PlateSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE03D135E50D33DFAC56FA7 /* PlateSettings.swift */; };
+		BB10D612C491564D0FB981A2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A884170E72EB42D4361311E1 /* SettingsView.swift */; };
+		BD0AAB269AD6F7AC35E750DA /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F85EBA0A87E3654C8A72166 /* Workout.swift */; };
+		C53484B979D04A9A54E78D7B /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62008E177127FC3A2D92064 /* Enums.swift */; };
+		C5B9B5C11961FCB7C506ADBC /* ChartTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6367BFED6A8DC6F64CB78D /* ChartTooltipView.swift */; };
+		CD075E6D123C23171CD76734 /* ProgramTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EC69F65065A6C2FE3658D9 /* ProgramTemplate.swift */; };
+		D67D7DBC327234CE3C67E569 /* OneRMCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D444F85E582BCBC1769E6AF3 /* OneRMCalculatorView.swift */; };
+		D929BE06906086C647F89EAB /* ProgramService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E1D724DFB378D8FDEE949A /* ProgramService.swift */; };
+		E1234A7416F8E483DA0393AE /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8630E15BC55AE3A0DB9E139F /* HealthKitService.swift */; };
+		E6D40813FDF666964E4B4B58 /* PlateCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889B9D9F732834D0154B776 /* PlateCalculator.swift */; };
+		E7D17852ED02D9F87BFB5D89 /* AddCardioSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A221DE4C84F89E2C7BC191 /* AddCardioSheet.swift */; };
+		F44724F65139A5D2140886B4 /* JeffNippardTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04480EDFF911E75A4C17BD77 /* JeffNippardTemplate.swift */; };
+		FA47F389C09A17B2DA3458AC /* OneRepMax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4957B8B085ADB01F7107FC9C /* OneRepMax.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		04480EDFF911E75A4C17BD77 /* JeffNippardTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JeffNippardTemplate.swift; sourceTree = "<group>"; };
+		0889B9D9F732834D0154B776 /* PlateCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateCalculator.swift; sourceTree = "<group>"; };
+		0ACCE1202BCC4A91FFEE4951 /* KeelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeelApp.swift; sourceTree = "<group>"; };
+		0D6367BFED6A8DC6F64CB78D /* ChartTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartTooltipView.swift; sourceTree = "<group>"; };
+		0DB2C7FB779ABE9F59AB5FAD /* SetLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetLog.swift; sourceTree = "<group>"; };
+		0E2C758CBB824225911E73A4 /* LiveWorkoutBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveWorkoutBanner.swift; sourceTree = "<group>"; };
+		1726D62C6008265835EC168E /* SubstitutionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstitutionSheet.swift; sourceTree = "<group>"; };
+		18E38A104C90BBAB01FA0676 /* ProgramBuilderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramBuilderView.swift; sourceTree = "<group>"; };
+		20797B54294EB1E59D197725 /* PlateCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateCalculatorView.swift; sourceTree = "<group>"; };
+		239202085E333BFDC6D83DC6 /* TimeRangePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangePicker.swift; sourceTree = "<group>"; };
+		24484F9F7D98891FB9522296 /* Keel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Keel.entitlements; sourceTree = "<group>"; };
+		247F0FAC66DFFE45AA1E9E8D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2CA5B641D4C93F5E6F3938C2 /* KeelTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeelTheme.swift; sourceTree = "<group>"; };
+		31867EB6282F62F2C65A4E76 /* RestTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerView.swift; sourceTree = "<group>"; };
+		32A593EB422BAE80F976F776 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		39F1B9F74BA845A4DF4FFCE3 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		3B290A805BE733536765A78F /* TemplateListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateListView.swift; sourceTree = "<group>"; };
+		4957B8B085ADB01F7107FC9C /* OneRepMax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneRepMax.swift; sourceTree = "<group>"; };
+		54344C76BB2B2A4DC08E0EB0 /* CardioLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioLog.swift; sourceTree = "<group>"; };
+		581EBA0AF0297652D1B1C0B0 /* AddOneRMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddOneRMView.swift; sourceTree = "<group>"; };
+		6887C71C7C6493C82498C7D3 /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
+		6F8AAFA819F5896BF69B3FC6 /* BodyCompView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyCompView.swift; sourceTree = "<group>"; };
+		73AEC2E7050E38723A718CFD /* Program.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Program.swift; sourceTree = "<group>"; };
+		77A221DE4C84F89E2C7BC191 /* AddCardioSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardioSheet.swift; sourceTree = "<group>"; };
+		8630E15BC55AE3A0DB9E139F /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		8F85EBA0A87E3654C8A72166 /* Workout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
+		9425BA18C0296B7C2B5AC82D /* WorkoutSessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionService.swift; sourceTree = "<group>"; };
+		A00B843133CD784E0A2B15F4 /* ExerciseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCardView.swift; sourceTree = "<group>"; };
+		A884170E72EB42D4361311E1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A8FFD0D93CFBBCB41950674C /* ExerciseFilterPills.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseFilterPills.swift; sourceTree = "<group>"; };
+		B0C00BA92CBF755EC821F335 /* StrengthChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrengthChartView.swift; sourceTree = "<group>"; };
+		B1EC69F65065A6C2FE3658D9 /* ProgramTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramTemplate.swift; sourceTree = "<group>"; };
+		C5E1D724DFB378D8FDEE949A /* ProgramService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramService.swift; sourceTree = "<group>"; };
+		CAE03D135E50D33DFAC56FA7 /* PlateSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateSettings.swift; sourceTree = "<group>"; };
+		D444F85E582BCBC1769E6AF3 /* OneRMCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneRMCalculatorView.swift; sourceTree = "<group>"; };
+		D4DD98AD186D93DF30805692 /* BodyComposition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyComposition.swift; sourceTree = "<group>"; };
+		D7090761EA78FED08AF01D2C /* ProgramOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramOverviewView.swift; sourceTree = "<group>"; };
+		DDA7180F043CEAC48F845F23 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		DFFC4DBF7D60E11E05E9A292 /* Keel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Keel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB9F51008F5680B7967B16CD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F62008E177127FC3A2D92064 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		014F620FDAE77BCE1CDCC1D0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DFFC4DBF7D60E11E05E9A292 /* Keel.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2281325CDC56A4A67C18C048 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				2CA5B641D4C93F5E6F3938C2 /* KeelTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		3131AB23F9FAD73EF8F15D04 /* Today */ = {
+			isa = PBXGroup;
+			children = (
+				77A221DE4C84F89E2C7BC191 /* AddCardioSheet.swift */,
+				A00B843133CD784E0A2B15F4 /* ExerciseCardView.swift */,
+				0E2C758CBB824225911E73A4 /* LiveWorkoutBanner.swift */,
+				31867EB6282F62F2C65A4E76 /* RestTimerView.swift */,
+				DDA7180F043CEAC48F845F23 /* TodayView.swift */,
+			);
+			path = Today;
+			sourceTree = "<group>";
+		};
+		360D5B07713D51D61DD5AB1F /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A884170E72EB42D4361311E1 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		41B12E7CAA0C3D0AB576335D /* BodyComp */ = {
+			isa = PBXGroup;
+			children = (
+				6F8AAFA819F5896BF69B3FC6 /* BodyCompView.swift */,
+			);
+			path = BodyComp;
+			sourceTree = "<group>";
+		};
+		756DFE6A19E2E2C09041E447 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				8630E15BC55AE3A0DB9E139F /* HealthKitService.swift */,
+				0889B9D9F732834D0154B776 /* PlateCalculator.swift */,
+				CAE03D135E50D33DFAC56FA7 /* PlateSettings.swift */,
+				C5E1D724DFB378D8FDEE949A /* ProgramService.swift */,
+				9425BA18C0296B7C2B5AC82D /* WorkoutSessionService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		7DBDC9C19C71D57FABDA751F /* OneRM */ = {
+			isa = PBXGroup;
+			children = (
+				D444F85E582BCBC1769E6AF3 /* OneRMCalculatorView.swift */,
+			);
+			path = OneRM;
+			sourceTree = "<group>";
+		};
+		9099C70F593C6A3C3BAB2BF3 /* Program */ = {
+			isa = PBXGroup;
+			children = (
+				18E38A104C90BBAB01FA0676 /* ProgramBuilderView.swift */,
+				D7090761EA78FED08AF01D2C /* ProgramOverviewView.swift */,
+				3B290A805BE733536765A78F /* TemplateListView.swift */,
+			);
+			path = Program;
+			sourceTree = "<group>";
+		};
+		9BF5FC49A581FE90B644CBF6 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				20797B54294EB1E59D197725 /* PlateCalculatorView.swift */,
+				1726D62C6008265835EC168E /* SubstitutionSheet.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		A3999AB3B79DCBB881373E60 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				41B12E7CAA0C3D0AB576335D /* BodyComp */,
+				9BF5FC49A581FE90B644CBF6 /* Components */,
+				7DBDC9C19C71D57FABDA751F /* OneRM */,
+				9099C70F593C6A3C3BAB2BF3 /* Program */,
+				CA82617B8A9C64A9F3D35E0F /* Progress */,
+				360D5B07713D51D61DD5AB1F /* Settings */,
+				3131AB23F9FAD73EF8F15D04 /* Today */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B50EE4CA1841B06CD6EF4E0A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D4DD98AD186D93DF30805692 /* BodyComposition.swift */,
+				54344C76BB2B2A4DC08E0EB0 /* CardioLog.swift */,
+				F62008E177127FC3A2D92064 /* Enums.swift */,
+				6887C71C7C6493C82498C7D3 /* Exercise.swift */,
+				4957B8B085ADB01F7107FC9C /* OneRepMax.swift */,
+				73AEC2E7050E38723A718CFD /* Program.swift */,
+				B1EC69F65065A6C2FE3658D9 /* ProgramTemplate.swift */,
+				0DB2C7FB779ABE9F59AB5FAD /* SetLog.swift */,
+				8F85EBA0A87E3654C8A72166 /* Workout.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		CA82617B8A9C64A9F3D35E0F /* Progress */ = {
+			isa = PBXGroup;
+			children = (
+				581EBA0AF0297652D1B1C0B0 /* AddOneRMView.swift */,
+				0D6367BFED6A8DC6F64CB78D /* ChartTooltipView.swift */,
+				A8FFD0D93CFBBCB41950674C /* ExerciseFilterPills.swift */,
+				39F1B9F74BA845A4DF4FFCE3 /* ProgressView.swift */,
+				B0C00BA92CBF755EC821F335 /* StrengthChartView.swift */,
+				239202085E333BFDC6D83DC6 /* TimeRangePicker.swift */,
+			);
+			path = Progress;
+			sourceTree = "<group>";
+		};
+		D6FAE18246B74B4514B7F3B8 = {
+			isa = PBXGroup;
+			children = (
+				F42D77EC062728740A115C6A /* Keel */,
+				014F620FDAE77BCE1CDCC1D0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DB323D749CAFEEA484688F25 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				04480EDFF911E75A4C17BD77 /* JeffNippardTemplate.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		F42D77EC062728740A115C6A /* Keel */ = {
+			isa = PBXGroup;
+			children = (
+				EB9F51008F5680B7967B16CD /* Assets.xcassets */,
+				247F0FAC66DFFE45AA1E9E8D /* ContentView.swift */,
+				32A593EB422BAE80F976F776 /* Info.plist */,
+				24484F9F7D98891FB9522296 /* Keel.entitlements */,
+				0ACCE1202BCC4A91FFEE4951 /* KeelApp.swift */,
+				DB323D749CAFEEA484688F25 /* Data */,
+				B50EE4CA1841B06CD6EF4E0A /* Models */,
+				756DFE6A19E2E2C09041E447 /* Services */,
+				2281325CDC56A4A67C18C048 /* Theme */,
+				A3999AB3B79DCBB881373E60 /* Views */,
+			);
+			path = Keel;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BB6C7D59AEC98AEBABAFB251 /* Keel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D85E3542563FBFE7F9C6A6B /* Build configuration list for PBXNativeTarget "Keel" */;
+			buildPhases = (
+				0571E1556398B86AB9A5EB44 /* Sources */,
+				C34C7FE6211AFEDAE04EF977 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Keel;
+			packageProductDependencies = (
+			);
+			productName = Keel;
+			productReference = DFFC4DBF7D60E11E05E9A292 /* Keel.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		21CE5A12478C27C89D8E099F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 45D0E41A41A0B25538C213B6 /* Build configuration list for PBXProject "Keel" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = D6FAE18246B74B4514B7F3B8;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 014F620FDAE77BCE1CDCC1D0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BB6C7D59AEC98AEBABAFB251 /* Keel */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C34C7FE6211AFEDAE04EF977 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AA81895D50289A4D058F06E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0571E1556398B86AB9A5EB44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7D17852ED02D9F87BFB5D89 /* AddCardioSheet.swift in Sources */,
+				14063A258479A277372100D7 /* AddOneRMView.swift in Sources */,
+				4F90858CE95AF5B6A795C8B6 /* BodyCompView.swift in Sources */,
+				A4C308516BE7D313379593F0 /* BodyComposition.swift in Sources */,
+				3E588B0AF7B1933120791786 /* CardioLog.swift in Sources */,
+				C5B9B5C11961FCB7C506ADBC /* ChartTooltipView.swift in Sources */,
+				0DA31F407CC6E1DE640C1B7F /* ContentView.swift in Sources */,
+				C53484B979D04A9A54E78D7B /* Enums.swift in Sources */,
+				4909427D85362BE6718E7FD8 /* Exercise.swift in Sources */,
+				8C69D058BF3D16402153F193 /* ExerciseCardView.swift in Sources */,
+				25A129BB010B91B805772D7F /* ExerciseFilterPills.swift in Sources */,
+				E1234A7416F8E483DA0393AE /* HealthKitService.swift in Sources */,
+				F44724F65139A5D2140886B4 /* JeffNippardTemplate.swift in Sources */,
+				2741EAD8B1FA80D56E46270B /* KeelApp.swift in Sources */,
+				30C53681FDDA9423A056C277 /* KeelTheme.swift in Sources */,
+				8AD6D64EF117756AFDCB2C86 /* LiveWorkoutBanner.swift in Sources */,
+				D67D7DBC327234CE3C67E569 /* OneRMCalculatorView.swift in Sources */,
+				FA47F389C09A17B2DA3458AC /* OneRepMax.swift in Sources */,
+				E6D40813FDF666964E4B4B58 /* PlateCalculator.swift in Sources */,
+				692A2C3DB0E8150D52AFB297 /* PlateCalculatorView.swift in Sources */,
+				B05CD3CEBCA11945D5846309 /* PlateSettings.swift in Sources */,
+				799FEF6012CE3A6BAAF4B298 /* Program.swift in Sources */,
+				70B6F0443C4CCE3A130E8D93 /* ProgramBuilderView.swift in Sources */,
+				7BB8CD263FB78E47F35DA4B0 /* ProgramOverviewView.swift in Sources */,
+				D929BE06906086C647F89EAB /* ProgramService.swift in Sources */,
+				CD075E6D123C23171CD76734 /* ProgramTemplate.swift in Sources */,
+				773126A0CBDDB52850BAB1E3 /* ProgressView.swift in Sources */,
+				54BBB5E0D9264BBC2600AECC /* RestTimerView.swift in Sources */,
+				409465258993D2B23DBF4D9E /* SetLog.swift in Sources */,
+				BB10D612C491564D0FB981A2 /* SettingsView.swift in Sources */,
+				04FDF137DC937C3332E8DBCB /* StrengthChartView.swift in Sources */,
+				071B8E2CD012305945E313B3 /* SubstitutionSheet.swift in Sources */,
+				16EB106AC4D22A504AD418EA /* TemplateListView.swift in Sources */,
+				2246EADBB4E8DD9B1AD29071 /* TimeRangePicker.swift in Sources */,
+				652DF05AAE2CF4C705FF05A8 /* TodayView.swift in Sources */,
+				BD0AAB269AD6F7AC35E750DA /* Workout.swift in Sources */,
+				36EE50C789C01184A4754EB7 /* WorkoutSessionService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2AB3542EAB3D9B571209A976 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3BD010658370695CD8ACA588 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Keel/Keel.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U6Y8P4JU4S;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Keel/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Keel;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Keel reads your body weight from Apple Health to display alongside your training data.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Keel saves workout summaries to Apple Health when you complete a training session.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.keel.app;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		68DFE817D555140150A10467 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Keel/Keel.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U6Y8P4JU4S;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Keel/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Keel;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Keel reads your body weight from Apple Health to display alongside your training data.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Keel saves workout summaries to Apple Health when you complete a training session.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.keel.app;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		82FD8EBF29644D7C98DC7791 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		45D0E41A41A0B25538C213B6 /* Build configuration list for PBXProject "Keel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2AB3542EAB3D9B571209A976 /* Debug */,
+				82FD8EBF29644D7C98DC7791 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6D85E3542563FBFE7F9C6A6B /* Build configuration list for PBXNativeTarget "Keel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				68DFE817D555140150A10467 /* Debug */,
+				3BD010658370695CD8ACA588 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 21CE5A12478C27C89D8E099F /* Project object */;
+}

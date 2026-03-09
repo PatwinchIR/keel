@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xcodegen generate)",
+      "WebFetch(domain:www.aubergine.co)",
+      "WebFetch(domain:github.com)",
+      "Bash(xcodebuild -project Keel.xcodeproj -scheme Keel -destination 'generic/platform=iOS' build)",
+      "Bash(xcodebuild -project Keel.xcodeproj -scheme Keel -destination 'generic/platform=iOS' build CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO)",
+      "Bash(xcodebuild -project Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 16' -quiet build CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO)",
+      "Bash(xcodebuild -project Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -quiet build CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO)",
+      "Bash(ls /Users/d_d/Desktop/things/keel/*.xcodeproj)",
+      "Bash(xcodebuild -project Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO)",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:support.apple.com)",
+      "WebFetch(domain:techwiser.com)",
+      "Bash(xcodebuild -project Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build)",
+      "Bash(xcodebuild -project /Users/d_d/Desktop/things/keel/Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build)",
+      "Bash(open /tmp/keel-font-preview.html)"
+    ]
+  }
+}
