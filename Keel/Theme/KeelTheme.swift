@@ -17,6 +17,10 @@ enum K {
         static let pr = Color(hex: 0xB8860B)
         static let error = Color(hex: 0xC0392B)
 
+        // Live workout gradient (vibrant green)
+        static let liveGradientTop = Color(hex: 0x3DA03A)
+        static let liveGradientBottom = Color(hex: 0x00C96A)
+
         static let warmup = Color(hex: 0xEFF4EC)
         static let working = Color(hex: 0xFFFFFF)
 
@@ -138,12 +142,19 @@ extension View {
 // MARK: - Font Helpers
 
 extension Font {
-    static let keelTitle = Font.system(.title, design: .default, weight: .bold)
-    static let keelHeadline = Font.system(.headline, design: .default, weight: .bold)
-    static let keelBody = Font.system(.body, design: .default, weight: .regular)
-    static let keelCaption = Font.system(.caption, design: .default, weight: .medium)
-    static let keelWeight = Font.system(.title, design: .default, weight: .heavy)
-    static let keelWeightLarge = Font.system(size: 48, weight: .heavy, design: .default)
+    // Space Grotesk — primary typeface
+    private static func spaceGrotesk(size: CGFloat, weight: String = "Regular") -> Font {
+        .custom("SpaceGrotesk-\(weight)", size: size)
+    }
+
+    static let keelTitle = spaceGrotesk(size: 28, weight: "Bold")
+    static let keelHeadline = spaceGrotesk(size: 17, weight: "Bold")
+    static let keelBody = spaceGrotesk(size: 17, weight: "Regular")
+    static let keelCaption = spaceGrotesk(size: 12, weight: "Medium")
+    static let keelWeight = spaceGrotesk(size: 28, weight: "Bold")
+    static let keelWeightLarge = spaceGrotesk(size: 48, weight: "Bold")
+
+    // Monospaced stays system — Space Grotesk is proportional
     static let keelMono = Font.system(.body, design: .monospaced, weight: .medium)
     static let keelMonoLarge = Font.system(size: 32, weight: .heavy, design: .monospaced)
 }

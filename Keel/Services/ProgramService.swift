@@ -54,7 +54,9 @@ final class ProgramService {
                         rpeTarget: exBP.rpeTarget,
                         restPeriod: exBP.restPeriod,
                         notes: exBP.notes,
-                        substitutions: exBP.substitutions
+                        substitutions: exBP.substitutions,
+                        isBodyweight: exBP.isBodyweight,
+                        isDumbbell: exBP.isDumbbell
                     )
                     exercise.workout = workout
                     workout.exercises.append(exercise)
@@ -64,6 +66,9 @@ final class ProgramService {
                 }
             }
         }
+
+        // Lock initial 1RMs to the program for this cycle
+        program.lockedOneRepMaxes = oneRepMaxes
 
         try? modelContext.save()
         return program
@@ -121,12 +126,95 @@ final class ProgramService {
         return nil
     }
 
+    // MARK: - Auto Week/Cycle Advancement
+
+    /// Checks if a new calendar week (Monday) has started since the last check.
+    /// If so, advances the program week — or starts a new cycle if at the end.
+    func checkWeekTransition() {
+        guard let program = activeProgram() else { return }
+
+        let cal = Calendar(identifier: .iso8601) // ISO weeks start on Monday
+        let now = Date()
+        let key = "keel_lastWeekCheckDate"
+        let lastCheckInterval = UserDefaults.standard.double(forKey: key)
+
+        // First launch — store current date, no advancement
+        guard lastCheckInterval > 0 else {
+            UserDefaults.standard.set(now.timeIntervalSince1970, forKey: key)
+            return
+        }
+
+        let lastCheck = Date(timeIntervalSince1970: lastCheckInterval)
+
+        // Get start-of-week (Monday) for both dates
+        guard let lastWeekStart = cal.dateInterval(of: .weekOfYear, for: lastCheck)?.start,
+              let thisWeekStart = cal.dateInterval(of: .weekOfYear, for: now)?.start else { return }
+
+        // Same week — no action
+        guard thisWeekStart > lastWeekStart else { return }
+
+        // Number of full weeks between the two Mondays
+        let daysBetween = cal.dateComponents([.day], from: lastWeekStart, to: thisWeekStart).day ?? 0
+        let weeksPassed = max(1, daysBetween / 7)
+
+        for _ in 0..<weeksPassed {
+            if program.currentWeek < program.totalWeeks {
+                program.currentWeek += 1
+            } else {
+                // Cycle complete — auto-start new cycle with latest 1RMs
+                let maxes = currentOneRepMaxes()
+                startNewCycle(program, newOneRepMaxes: maxes)
+            }
+        }
+
+        try? modelContext.save()
+        UserDefaults.standard.set(now.timeIntervalSince1970, forKey: key)
+    }
+
     // MARK: - Week Management
 
     func setWeek(_ program: Program, to week: Int) {
         let clamped = max(1, min(week, program.totalWeeks))
         program.currentWeek = clamped
         try? modelContext.save()
+    }
+
+    /// Derives the current cycle number from the max record count across all lifts.
+    func syncCycleNumber() {
+        guard let program = activeProgram() else { return }
+        var maxCount = 0
+        for lift in CompoundLift.allCases {
+            let count = oneRepMaxHistory(for: lift).count
+            maxCount = max(maxCount, count)
+        }
+        let derived = max(1, maxCount)
+        if program.currentCycleNumber != derived {
+            program.currentCycleNumber = derived
+            try? modelContext.save()
+        }
+    }
+
+    /// One-time lock of current 1RMs to the active program (for migration)
+    func migrateLockedOneRepMaxes() {
+        guard let program = activeProgram(), program.lockedOneRepMaxesData == nil else { return }
+        program.lockedOneRepMaxes = currentOneRepMaxes()
+        try? modelContext.save()
+    }
+
+    /// One-time rename of exercise names to match CompoundLift.displayName
+    func migrateExerciseNames() {
+        let renames = ["Barbell Bench Press": "Bench Press"]
+        guard let program = activeProgram() else { return }
+        var changed = false
+        for workout in program.workouts {
+            for exercise in workout.exercises {
+                if let newName = renames[exercise.name] {
+                    exercise.name = newName
+                    changed = true
+                }
+            }
+        }
+        if changed { try? modelContext.save() }
     }
 
     func advanceWeek(_ program: Program) {
@@ -139,6 +227,12 @@ final class ProgramService {
     func startNewCycle(_ program: Program, newOneRepMaxes: [CompoundLift: Double]) {
         program.currentWeek = 1
         program.currentCycleNumber += 1
+
+        // Lock the new 1RMs for this cycle
+        program.lockedOneRepMaxes = newOneRepMaxes
+
+        // Reset the week-check date so checkWeekTransition doesn't re-advance
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "keel_lastWeekCheckDate")
 
         // Recalculate all percentage-based loads
         for workout in program.workouts {
@@ -187,6 +281,25 @@ final class ProgramService {
         try? modelContext.save()
     }
 
+    func completeWeek(_ program: Program, week: Int) {
+        let now = Date()
+        let workouts = program.workoutsForWeek(week)
+        for workout in workouts where !workout.isCompleted {
+            for exercise in workout.exercises {
+                for log in exercise.setLogs where !log.isCompleted {
+                    log.isCompleted = true
+                    log.completedAt = now
+                }
+            }
+            workout.isCompleted = true
+            workout.completedAt = now
+            if workout.startedAt == nil {
+                workout.startedAt = now
+            }
+        }
+        try? modelContext.save()
+    }
+
     func markSetComplete(_ setLog: SetLog) {
         setLog.isCompleted = true
         setLog.completedAt = Date()
@@ -201,8 +314,39 @@ final class ProgramService {
         try? modelContext.save()
     }
 
+    func skipSet(_ setLog: SetLog) {
+        setLog.isCompleted = true
+        setLog.isSkipped = true
+        setLog.completedAt = Date()
+
+        // Mark workout start time if this is the first completed set
+        if let exercise = setLog.exercise,
+           let workout = exercise.workout,
+           workout.startedAt == nil {
+            workout.startedAt = Date()
+        }
+
+        try? modelContext.save()
+    }
+
+    func skipExercise(_ exercise: Exercise) {
+        let now = Date()
+        for setLog in exercise.setLogs where !setLog.isCompleted {
+            setLog.isCompleted = true
+            setLog.isSkipped = true
+            setLog.completedAt = now
+        }
+
+        if let workout = exercise.workout, workout.startedAt == nil {
+            workout.startedAt = now
+        }
+
+        try? modelContext.save()
+    }
+
     func unmarkSetComplete(_ setLog: SetLog) {
         setLog.isCompleted = false
+        setLog.isSkipped = false
         setLog.completedAt = nil
 
         // If workout was marked complete, undo that too
@@ -220,6 +364,7 @@ final class ProgramService {
         for exercise in workout.exercises {
             for log in exercise.setLogs {
                 log.isCompleted = false
+                log.isSkipped = false
                 log.completedAt = nil
                 log.rpe = nil
                 log.note = nil
@@ -252,9 +397,14 @@ final class ProgramService {
         return result
     }
 
-    func saveOneRepMax(lift: CompoundLift, weight: Double, cycleNumber: Int, note: String? = nil) {
-        let orm = OneRepMax(lift: lift, weight: weight, cycleNumber: cycleNumber, note: note)
+    func saveOneRepMax(lift: CompoundLift, weight: Double, date: Date = Date(), cycleNumber: Int, note: String? = nil) {
+        let orm = OneRepMax(lift: lift, weight: weight, date: date, cycleNumber: cycleNumber, note: note)
         modelContext.insert(orm)
+        try? modelContext.save()
+    }
+
+    func deleteOneRepMax(_ record: OneRepMax) {
+        modelContext.delete(record)
         try? modelContext.save()
     }
 
@@ -373,6 +523,36 @@ final class ProgramService {
             }
         }
         return names.sorted()
+    }
+
+    /// Builds estimated 1RM history for ALL exercises in a single fetch pass.
+    /// Returns a dictionary mapping exercise display name to its daily max estimated 1RM entries.
+    func allEstimatedOneRMHistories() -> [String: [(date: Date, estimated1RM: Double)]] {
+        let descriptor = FetchDescriptor<Exercise>()
+        guard let exercises = try? modelContext.fetch(descriptor) else { return [:] }
+
+        let calendar = Calendar.current
+        // exerciseName -> (day -> maxEstimate)
+        var grouped: [String: [Date: Double]] = [:]
+
+        for exercise in exercises {
+            let displayName = exercise.activeSubstitution ?? exercise.name
+            for log in exercise.setLogs {
+                guard log.setType == .working,
+                      log.isCompleted,
+                      let weight = log.weight, weight > 0,
+                      let reps = log.reps, reps > 0 else { continue }
+
+                let estimate = OneRepMax.brzyckiEstimate(weight: weight, reps: reps)
+                let day = calendar.startOfDay(for: log.completedAt ?? Date())
+                grouped[displayName, default: [:]][day] = max(grouped[displayName, default: [:]][day] ?? 0, estimate)
+            }
+        }
+
+        return grouped.mapValues { dayMap in
+            dayMap.map { (date: $0.key, estimated1RM: $0.value) }
+                .sorted { $0.date < $1.date }
+        }
     }
 }
 

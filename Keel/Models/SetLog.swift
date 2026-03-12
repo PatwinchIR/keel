@@ -10,6 +10,7 @@ final class SetLog {
     var reps: Int?
     var rpe: Double?
     var isCompleted: Bool
+    var isSkipped: Bool
     var completedAt: Date?
     var note: String?
     var exercise: Exercise?
@@ -31,5 +32,6 @@ final class SetLog {
         self.weight = weight
         self.reps = reps
         self.isCompleted = false
+        self.isSkipped = false
     }
 }

@@ -12,6 +12,9 @@ targets:
     platform: iOS
     sources:
       - Keel
+    resources:
+      - path: Keel/Fonts
+        buildPhase: resources
     settings:
       base:
         INFOPLIST_FILE: Keel/Info.plist

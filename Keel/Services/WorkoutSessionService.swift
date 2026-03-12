@@ -3,9 +3,10 @@ import HealthKit
 
 @Observable
 final class WorkoutSessionService: NSObject, @unchecked Sendable {
-    private let healthStore = HKHealthStore()
+    private let healthStore: HKHealthStore
     private var workoutBuilder: HKWorkoutBuilder?
     private var hrQuery: HKAnchoredObjectQuery?
+    private var calorieQuery: HKAnchoredObjectQuery?
     private var timer: Timer?
     private var sessionStartDate: Date?
 
@@ -14,9 +15,21 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
     var heartRate: Double = 0
     var activeCalories: Double = 0
     var elapsedTime: TimeInterval = 0
+    var sessionMode: SessionMode = .none
 
     private var pausedAccumulated: TimeInterval = 0
     private var lastResumeDate: Date?
+
+    enum SessionMode {
+        case none
+        case `internal`
+        case external
+    }
+
+    init(healthStore: HKHealthStore) {
+        self.healthStore = healthStore
+        super.init()
+    }
 
     var isAvailable: Bool {
         HKHealthStore.isHealthDataAvailable()
@@ -33,7 +46,33 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 
-    // MARK: - Session Lifecycle
+    // MARK: - Focus Filter Observation
+
+    func setupFocusFilterObservation() {
+        // Listen for Focus Filter intent notifications
+        NotificationCenter.default.addObserver(
+            forName: .focusFilterDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            let isActive = notification.userInfo?["isActive"] as? Bool ?? false
+            if isActive {
+                self?.startExternalObservation()
+            } else {
+                self?.stopExternalObservation()
+            }
+        }
+    }
+
+    /// Called on app foreground — only stop stale external sessions, never start new ones.
+    /// Starting is handled exclusively by the Focus Filter intent notification.
+    func checkFocusState() {
+        if !FocusState.isActive && sessionMode == .external {
+            stopExternalObservation()
+        }
+    }
+
+    // MARK: - Internal Session Lifecycle
 
     func startSession(activityType: HKWorkoutActivityType = .traditionalStrengthTraining) {
         guard isAvailable, !isSessionActive else { return }
@@ -52,6 +91,7 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
         sessionStartDate = now
         lastResumeDate = now
         pausedAccumulated = 0
+        activeCalories = 0
 
         Task {
             do {
@@ -61,14 +101,16 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
             }
         }
 
+        sessionMode = .internal
         isSessionActive = true
         isPaused = false
         startTimer()
         startHeartRateQuery(from: now)
+        startCalorieQuery(from: now)
     }
 
     func pauseSession() {
-        guard isSessionActive, !isPaused else { return }
+        guard isSessionActive, !isPaused, sessionMode == .internal else { return }
         isPaused = true
         if let resume = lastResumeDate {
             pausedAccumulated += Date().timeIntervalSince(resume)
@@ -78,7 +120,7 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
     }
 
     func resumeSession() {
-        guard isSessionActive, isPaused else { return }
+        guard isSessionActive, isPaused, sessionMode == .internal else { return }
         isPaused = false
         lastResumeDate = Date()
         startTimer()
@@ -86,8 +128,15 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
 
     func endSession() {
         guard isSessionActive else { return }
+
+        if sessionMode == .external {
+            stopExternalObservation()
+            return
+        }
+
         stopTimer()
         stopHeartRateQuery()
+        stopCalorieQuery()
 
         // Final elapsed calculation
         if !isPaused, let resume = lastResumeDate {
@@ -99,19 +148,6 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
 
         Task {
             do {
-                // Add active energy sample if we have calories
-                if activeCalories > 0, let startDate = sessionStartDate {
-                    if let calType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) {
-                        let calSample = HKQuantitySample(
-                            type: calType,
-                            quantity: HKQuantity(unit: .kilocalorie(), doubleValue: activeCalories),
-                            start: startDate,
-                            end: endDate
-                        )
-                        try await workoutBuilder?.addSamples([calSample])
-                    }
-                }
-
                 try await workoutBuilder?.endCollection(at: endDate)
                 try await workoutBuilder?.finishWorkout()
             } catch {
@@ -122,6 +158,35 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
                 self.resetState()
             }
         }
+    }
+
+    // MARK: - External Session (Focus Filter)
+
+    private func startExternalObservation() {
+        guard !isSessionActive else { return }
+
+        let now = Date()
+        sessionStartDate = now
+        lastResumeDate = now
+        pausedAccumulated = 0
+        activeCalories = 0
+
+        sessionMode = .external
+        isSessionActive = true
+        isPaused = false
+        startTimer()
+        startHeartRateQuery(from: now)
+        startCalorieQuery(from: now)
+    }
+
+    private func stopExternalObservation() {
+        guard sessionMode == .external else { return }
+        stopTimer()
+        stopHeartRateQuery()
+        stopCalorieQuery()
+        // Clear persisted focus state so it doesn't restart on next foreground
+        UserDefaults.standard.set(false, forKey: FocusState.key)
+        resetState()
     }
 
     // MARK: - Timer
@@ -136,7 +201,6 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
                     total += Date().timeIntervalSince(resume)
                 }
                 self.elapsedTime = total
-                self.updateEstimatedCalories()
             }
         }
     }
@@ -190,18 +254,58 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
         }
     }
 
-    // MARK: - Calorie Estimation
+    // MARK: - Real Calorie Observation
 
-    /// Simple MET-based calorie estimate per minute for strength training
-    private func updateEstimatedCalories() {
-        guard isSessionActive else { return }
-        let minutes = elapsedTime / 60.0
-        activeCalories = minutes * 5.0
+    private func startCalorieQuery(from startDate: Date) {
+        guard let calType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) else { return }
+
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: nil, options: .strictStartDate)
+
+        calorieQuery = HKAnchoredObjectQuery(
+            type: calType,
+            predicate: predicate,
+            anchor: nil,
+            limit: HKObjectQueryNoLimit
+        ) { [weak self] _, samples, _, _, _ in
+            self?.processCalorieSamples(samples)
+        }
+
+        calorieQuery?.updateHandler = { [weak self] _, samples, _, _, _ in
+            self?.processCalorieSamples(samples)
+        }
+
+        if let calorieQuery {
+            healthStore.execute(calorieQuery)
+        }
     }
+
+    private func stopCalorieQuery() {
+        if let calorieQuery {
+            healthStore.stop(calorieQuery)
+        }
+        calorieQuery = nil
+    }
+
+    private func processCalorieSamples(_ samples: [HKSample]?) {
+        guard let quantitySamples = samples as? [HKQuantitySample] else { return }
+
+        let total = quantitySamples.reduce(0.0) { sum, sample in
+            sum + sample.quantity.doubleValue(for: .kilocalorie())
+        }
+
+        guard total > 0 else { return }
+
+        Task { @MainActor in
+            self.activeCalories += total
+        }
+    }
+
+    // MARK: - Reset
 
     private func resetState() {
         isSessionActive = false
         isPaused = false
+        sessionMode = .none
         heartRate = 0
         activeCalories = 0
         elapsedTime = 0

@@ -16,7 +16,20 @@
       "WebFetch(domain:techwiser.com)",
       "Bash(xcodebuild -project Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build)",
       "Bash(xcodebuild -project /Users/d_d/Desktop/things/keel/Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build)",
-      "Bash(open /tmp/keel-font-preview.html)"
+      "Bash(open /tmp/keel-font-preview.html)",
+      "Bash(unzip -l space-grotesk.zip)",
+      "Bash(unzip -o SpaceGrotesk.zip -d SpaceGrotesk)",
+      "Bash(xcodebuild -project Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build)",
+      "Bash(xcodebuild -project /Users/d_d/Desktop/things/keel/Keel.xcodeproj -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build)",
+      "Bash(xcodebuild -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build)",
+      "Bash(xcodebuild -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4' build)",
+      "Bash(xcodebuild -scheme Keel -destination 'generic/platform=iOS Simulator' build)",
+      "Bash(xcodebuild -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build)",
+      "Bash(python3 -c \":*)",
+      "Bash(pip3 install openpyxl -q)",
+      "Bash(pip3 install openpyxl -q --break-system-packages)",
+      "Bash(python3:*)",
+      "Bash(xcodebuild build -scheme Keel -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -quiet)"
     ]
   }
 }

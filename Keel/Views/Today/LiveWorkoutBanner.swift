@@ -2,108 +2,151 @@ import SwiftUI
 
 struct LiveWorkoutBanner: View {
     var workoutService: WorkoutSessionService
-    var onCancel: (() -> Void)? = nil
+    var healthKitService: HealthKitService
+    var onEnd: (() -> Void)? = nil
 
     @State private var heartPulse = false
-    @State private var showCancelConfirm = false
+    @State private var breathe = false
+    @State private var showEndConfirm = false
+
+    private var isExternal: Bool {
+        workoutService.sessionMode == .external
+    }
+
+    private var pulseDuration: Double {
+        guard workoutService.heartRate > 0 else { return 1.0 }
+        return 60.0 / workoutService.heartRate
+    }
 
     var body: some View {
-        VStack(spacing: K.Spacing.xs) {
-            HStack(spacing: K.Spacing.md) {
-                // Live indicator + elapsed time
-                HStack(spacing: K.Spacing.xs) {
-                    Circle()
-                        .fill(Color.red)
-                        .frame(width: 6, height: 6)
-                    Text("LIVE")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(.red)
-                    Text(workoutService.formattedElapsedTime)
-                        .font(.system(.caption, design: .monospaced, weight: .semibold))
-                        .foregroundStyle(K.Colors.primary)
-                }
+        HStack {
+            // Heart rate
+            statItem(
+                icon: "heart.fill",
+                value: workoutService.heartRate > 0 ? "\(Int(workoutService.heartRate))" : "--",
+                label: "bpm",
+                pulse: true,
+                dimValue: workoutService.heartRate == 0
+            )
 
-                Spacer()
+            Spacer()
 
-                // Heart rate
-                if workoutService.heartRate > 0 {
-                    HStack(spacing: 4) {
-                        Image(systemName: "heart.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.red)
-                            .scaleEffect(heartPulse ? 1.2 : 1.0)
-                            .animation(
-                                .easeInOut(duration: 0.5).repeatForever(autoreverses: true),
-                                value: heartPulse
-                            )
-                        Text("\(Int(workoutService.heartRate))")
-                            .font(.system(.caption, design: .monospaced, weight: .medium))
-                            .foregroundStyle(K.Colors.primary)
-                    }
-                    .onAppear { heartPulse = true }
-                }
+            // Calories
+            statItem(
+                icon: "flame.fill",
+                value: "\(Int(workoutService.activeCalories))",
+                label: "cal",
+                pulse: false
+            )
 
-                // Calories
-                if workoutService.activeCalories > 0 {
-                    HStack(spacing: 4) {
-                        Image(systemName: "flame.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.orange)
-                        Text("\(Int(workoutService.activeCalories)) cal")
-                            .font(.system(.caption, design: .monospaced, weight: .medium))
-                            .foregroundStyle(K.Colors.primary)
+            Spacer()
+
+            // Controls
+            HStack(spacing: K.Spacing.sm) {
+                if !isExternal {
+                    Button {
+                        if workoutService.isPaused {
+                            workoutService.resumeSession()
+                        } else {
+                            workoutService.pauseSession()
+                        }
+                    } label: {
+                        Image(systemName: workoutService.isPaused ? "play.fill" : "pause.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 28, height: 28)
+                            .background(.white.opacity(0.2))
+                            .clipShape(Circle())
                     }
                 }
 
-                // Pause / Resume
                 Button {
-                    if workoutService.isPaused {
-                        workoutService.resumeSession()
-                    } else {
-                        workoutService.pauseSession()
-                    }
-                } label: {
-                    Image(systemName: workoutService.isPaused ? "play.fill" : "pause.fill")
-                        .font(.caption)
-                        .foregroundStyle(K.Colors.primary)
-                        .frame(width: 28, height: 28)
-                        .background(K.Colors.surfaceLight)
-                        .clipShape(Circle())
-                }
-
-                // Cancel / Stop
-                Button {
-                    showCancelConfirm = true
+                    showEndConfirm = true
                 } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(K.Colors.error)
+                        .foregroundStyle(.white)
                         .frame(width: 28, height: 28)
-                        .background(K.Colors.error.opacity(0.1))
+                        .background(.white.opacity(0.15))
                         .clipShape(Circle())
                 }
             }
-
-            Text("Tracking workout for Apple Health")
-                .font(.system(size: 10))
-                .foregroundStyle(K.Colors.tertiary)
         }
         .padding(.horizontal, K.Spacing.lg)
-        .padding(.vertical, K.Spacing.sm)
-        .background(K.Colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
-        .overlay(
-            RoundedRectangle(cornerRadius: K.Radius.sharp)
-                .stroke(K.Colors.accent.opacity(0.3), lineWidth: 0.5)
+        .padding(.vertical, K.Spacing.md)
+        .background(
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        K.Colors.liveGradientTop,
+                        K.Colors.liveGradientBottom
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+
+                // Breathing overlay
+                Color.white
+                    .opacity(breathe ? 0.10 : 0.0)
+                    .animation(
+                        .easeInOut(duration: 2.5).repeatForever(autoreverses: true),
+                        value: breathe
+                    )
+            }
+            .ignoresSafeArea(edges: .top)
         )
-        .confirmationDialog("End Workout Session?", isPresented: $showCancelConfirm, titleVisibility: .visible) {
-            Button("End Session", role: .destructive) {
+        .onAppear {
+            heartPulse = true
+            breathe = true
+        }
+        .confirmationDialog(
+            isExternal ? "Stop Tracking?" : "End Workout Session?",
+            isPresented: $showEndConfirm,
+            titleVisibility: .visible
+        ) {
+            Button(isExternal ? "Stop Tracking" : "End Session", role: .destructive) {
                 workoutService.endSession()
-                onCancel?()
+                onEnd?()
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This will stop tracking time and calories. Your completed sets will be kept.")
+            Text(isExternal
+                 ? "This will stop observing your Apple Watch workout data."
+                 : "This will stop tracking time and calories. Your completed sets will be kept.")
+        }
+    }
+
+    // MARK: - Stat Item
+
+    @ViewBuilder
+    private func statItem(
+        icon: String,
+        value: String,
+        label: String?,
+        pulse: Bool,
+        dimValue: Bool = false
+    ) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 13))
+                .foregroundStyle(.white.opacity(0.9))
+                .scaleEffect(pulse && heartPulse ? 1.25 : 1.0)
+                .animation(
+                    pulse ? .easeInOut(duration: pulseDuration).repeatForever(autoreverses: true) : .default,
+                    value: heartPulse
+                )
+
+            Text(value)
+                .font(.system(size: 17, weight: .bold, design: .monospaced))
+                .foregroundStyle(dimValue ? .white.opacity(0.4) : .white)
+                .monospacedDigit()
+                .contentTransition(.numericText())
+
+            if let label {
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ final class Program {
     var trainingDaysRaw: [Int]
     var templateId: UUID?
     var isActive: Bool
+    var lockedOneRepMaxesData: Data?
 
     @Relationship(deleteRule: .cascade, inverse: \Block.program)
     var blocks: [Block]
@@ -28,6 +29,25 @@ final class Program {
     var trainingDays: [TrainingDay] {
         get { trainingDaysRaw.compactMap { TrainingDay(rawValue: $0) }.sorted() }
         set { trainingDaysRaw = newValue.map(\.rawValue) }
+    }
+
+    /// 1RM values locked at cycle start — used for all percentage-based calculations during the cycle.
+    var lockedOneRepMaxes: [CompoundLift: Double] {
+        get {
+            guard let data = lockedOneRepMaxesData,
+                  let dict = try? JSONDecoder().decode([String: Double].self, from: data) else { return [:] }
+            var result: [CompoundLift: Double] = [:]
+            for (key, value) in dict {
+                if let lift = CompoundLift(rawValue: key) {
+                    result[lift] = value
+                }
+            }
+            return result
+        }
+        set {
+            let dict = Dictionary(uniqueKeysWithValues: newValue.map { ($0.key.rawValue, $0.value) })
+            lockedOneRepMaxesData = try? JSONEncoder().encode(dict)
+        }
     }
 
     init(

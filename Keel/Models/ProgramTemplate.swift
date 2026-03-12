@@ -78,6 +78,8 @@ struct ExerciseBlueprint {
     let restPeriod: String
     let notes: String
     let substitutions: [String]
+    let isBodyweight: Bool
+    let isDumbbell: Bool
 
     init(
         name: String,
@@ -92,7 +94,9 @@ struct ExerciseBlueprint {
         rpeTarget: String? = nil,
         restPeriod: String = "2-3 min",
         notes: String = "",
-        substitutions: [String] = []
+        substitutions: [String] = [],
+        isBodyweight: Bool = false,
+        isDumbbell: Bool = false
     ) {
         self.name = name
         self.orderIndex = orderIndex
@@ -107,5 +111,7 @@ struct ExerciseBlueprint {
         self.restPeriod = restPeriod
         self.notes = notes
         self.substitutions = substitutions
+        self.isBodyweight = isBodyweight
+        self.isDumbbell = isDumbbell
     }
 }

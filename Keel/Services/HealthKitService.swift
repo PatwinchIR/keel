@@ -3,9 +3,12 @@ import HealthKit
 
 @Observable
 final class HealthKitService: @unchecked Sendable {
-    private let healthStore = HKHealthStore()
+    let healthStore = HKHealthStore()
     var isAuthorized = false
     var latestBodyWeight: Double?
+    var activityRings = ActivityRingData()
+
+    private var activityTimer: Timer?
 
     var isAvailable: Bool {
         HKHealthStore.isHealthDataAvailable()
@@ -22,13 +25,17 @@ final class HealthKitService: @unchecked Sendable {
         let typesToRead: Set<HKObjectType> = [
             HKObjectType.quantityType(forIdentifier: .bodyMass)!,
             HKObjectType.quantityType(forIdentifier: .heartRate)!,
-            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+            HKObjectType.quantityType(forIdentifier: .appleExerciseTime)!,
+            HKObjectType.categoryType(forIdentifier: .appleStandHour)!,
+            HKObjectType.activitySummaryType()
         ]
 
         do {
             try await healthStore.requestAuthorization(toShare: typesToWrite, read: typesToRead)
             isAuthorized = true
             await fetchLatestBodyWeight()
+            fetchTodayActivitySummary()
         } catch {
             print("HealthKit authorization failed: \(error)")
         }
@@ -74,6 +81,55 @@ final class HealthKitService: @unchecked Sendable {
         } catch {
             print("Failed to save workout to HealthKit: \(error)")
         }
+    }
+
+    // MARK: - Activity Rings
+
+    func fetchTodayActivitySummary() {
+        guard isAvailable, isAuthorized else { return }
+
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day, .era], from: Date())
+        components.calendar = calendar
+        let predicate = HKQuery.predicateForActivitySummary(with: components)
+
+        let query = HKActivitySummaryQuery(predicate: predicate) { [weak self] _, summaries, _ in
+            guard let summary = summaries?.first else { return }
+
+            let move = summary.activeEnergyBurned.doubleValue(for: .kilocalorie())
+            let moveGoal = summary.activeEnergyBurnedGoal.doubleValue(for: .kilocalorie())
+            let exercise = summary.appleExerciseTime.doubleValue(for: .minute())
+            let exerciseGoal = summary.appleExerciseTimeGoal.doubleValue(for: .minute())
+            let stand = summary.appleStandHours.doubleValue(for: .count())
+            let standGoal = summary.appleStandHoursGoal.doubleValue(for: .count())
+
+            Task { @MainActor [weak self] in
+                self?.activityRings = ActivityRingData(
+                    moveCalories: move,
+                    moveGoal: moveGoal,
+                    exerciseMinutes: exercise,
+                    exerciseGoal: exerciseGoal,
+                    standHours: stand,
+                    standGoal: standGoal
+                )
+            }
+        }
+
+        healthStore.execute(query)
+    }
+
+    /// Start periodic refresh of activity rings (every 60s) during active workout
+    func startActivityRingRefresh() {
+        stopActivityRingRefresh()
+        fetchTodayActivitySummary()
+        activityTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+            self?.fetchTodayActivitySummary()
+        }
+    }
+
+    func stopActivityRingRefresh() {
+        activityTimer?.invalidate()
+        activityTimer = nil
     }
 }
 

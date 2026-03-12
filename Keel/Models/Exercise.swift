@@ -17,6 +17,8 @@ final class Exercise {
     var restPeriod: String
     var notes: String
     var substitutions: [String]
+    var isBodyweight: Bool = false
+    var isDumbbell: Bool = false
     var activeSubstitution: String?
     var workout: Workout?
 
@@ -88,7 +90,9 @@ final class Exercise {
         rpeTarget: String? = nil,
         restPeriod: String = "2-3 min",
         notes: String = "",
-        substitutions: [String] = []
+        substitutions: [String] = [],
+        isBodyweight: Bool = false,
+        isDumbbell: Bool = false
     ) {
         self.id = UUID()
         self.name = name
@@ -104,6 +108,8 @@ final class Exercise {
         self.restPeriod = restPeriod
         self.notes = notes
         self.substitutions = substitutions
+        self.isBodyweight = isBodyweight
+        self.isDumbbell = isDumbbell
         self.activeSubstitution = nil
         self.setLogs = []
     }

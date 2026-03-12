@@ -7,6 +7,8 @@ struct ExerciseCardView: View {
     let onTap: () -> Void
     let onSetComplete: (SetLog) -> Void
     var onSetUncomplete: ((SetLog) -> Void)? = nil
+    var onSetSkip: ((SetLog) -> Void)? = nil
+    var onSkipExercise: (() -> Void)? = nil
     let onLongPress: () -> Void
     var onStartRest: ((Int) -> Void)? = nil
     var previousSets: [SetLog]?
@@ -224,7 +226,7 @@ struct ExerciseCardView: View {
                 Text("RPE")
                     .frame(width: 50, alignment: .center)
                 Text("")
-                    .frame(width: 44)
+                    .frame(width: 72)
             }
             .font(.system(size: 11, weight: .semibold))
             .foregroundStyle(K.Colors.tertiary)
@@ -244,10 +246,12 @@ struct ExerciseCardView: View {
 
                 SetRowView(
                     setLog: setLog,
-                    isBodyweightExercise: exercise.loadType == .rpe && exercise.percentageOf == nil,
+                    isBodyweightExercise: exercise.isBodyweight,
+                    isDumbbellExercise: exercise.isDumbbell,
                     displayNumber: displayNum,
                     onComplete: { onSetComplete(setLog) },
-                    onUncomplete: { onSetUncomplete?(setLog) }
+                    onUncomplete: { onSetUncomplete?(setLog) },
+                    onSkip: { onSetSkip?(setLog) }
                 )
             }
 
@@ -262,6 +266,30 @@ struct ExerciseCardView: View {
                         .foregroundStyle(K.Colors.secondary)
                 }
                 .padding(K.Spacing.lg)
+            }
+
+            // Skip exercise button — shown when not all sets are done
+            if !allComplete {
+                Button {
+                    onSkipExercise?()
+                } label: {
+                    HStack(spacing: K.Spacing.sm) {
+                        Image(systemName: "forward.fill")
+                            .font(.caption)
+                        Text("Skip Exercise")
+                            .font(.system(.caption, weight: .medium))
+                    }
+                    .foregroundStyle(K.Colors.tertiary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, K.Spacing.sm)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: K.Radius.sharp)
+                            .stroke(K.Colors.surfaceBorder, lineWidth: 1)
+                    )
+                }
+                .padding(.horizontal, K.Spacing.lg)
+                .padding(.top, K.Spacing.sm)
+                .padding(.bottom, exercise.sortedSetLogs.contains(where: \.isCompleted) ? 0 : K.Spacing.lg)
             }
 
             // Rest timer button — shown when some sets are done but not all
@@ -285,7 +313,7 @@ struct ExerciseCardView: View {
                     )
                 }
                 .padding(.horizontal, K.Spacing.lg)
-                .padding(.bottom, K.Spacing.md)
+                .padding(.bottom, K.Spacing.lg)
             }
         }
     }
@@ -296,9 +324,11 @@ struct ExerciseCardView: View {
 struct SetRowView: View {
     @Bindable var setLog: SetLog
     var isBodyweightExercise: Bool = false
+    var isDumbbellExercise: Bool = false
     var displayNumber: Int? = nil
     let onComplete: () -> Void
     var onUncomplete: (() -> Void)? = nil
+    var onSkip: (() -> Void)? = nil
     @State private var showNote = false
 
     var body: some View {
@@ -312,22 +342,15 @@ struct SetRowView: View {
 
                 // Weight (with unit label)
                 HStack(spacing: 2) {
-                    if isBodyweightExercise && setLog.weight == nil {
-                        Text("BW")
-                            .font(.system(.body, design: .monospaced, weight: .bold))
-                            .foregroundStyle(K.Colors.tertiary)
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        TextField("—", value: $setLog.weight, format: .number)
-                            .font(.system(.body, design: .monospaced, weight: .bold))
-                            .foregroundStyle(K.Colors.primary)
-                            .multilineTextAlignment(.center)
-                            .keyboardType(.decimalPad)
-                            .frame(maxWidth: .infinity)
-                        Text("lbs")
-                            .font(.system(size: 11))
-                            .foregroundStyle(K.Colors.tertiary)
-                    }
+                    TextField(isBodyweightExercise ? "BW" : "—", value: $setLog.weight, format: .number)
+                        .font(.system(.body, design: .monospaced, weight: .bold))
+                        .foregroundStyle(K.Colors.primary)
+                        .multilineTextAlignment(.center)
+                        .keyboardType(.decimalPad)
+                        .frame(maxWidth: .infinity)
+                    Text(isDumbbellExercise ? "lbs/db" : (isBodyweightExercise ? "+lbs" : "lbs"))
+                        .font(.system(size: 11))
+                        .foregroundStyle(K.Colors.tertiary)
                 }
 
                 // Reps
@@ -346,23 +369,46 @@ struct SetRowView: View {
                     .keyboardType(.decimalPad)
                     .frame(width: 50)
 
-                // Complete / uncomplete button
-                Button {
-                    if setLog.isCompleted {
-                        onUncomplete?()
+                // Action buttons (skip + complete/uncomplete)
+                HStack(spacing: 0) {
+                    // Skip button (only for incomplete sets, but always reserve space)
+                    if !setLog.isCompleted {
+                        Button {
+                            onSkip?()
+                        } label: {
+                            Image(systemName: "forward.fill")
+                                .font(.system(size: 11))
+                                .foregroundStyle(K.Colors.tertiary)
+                        }
+                        .frame(width: 28)
                     } else {
-                        onComplete()
+                        Spacer()
+                            .frame(width: 28)
                     }
-                } label: {
-                    Image(systemName: setLog.isCompleted ? "checkmark.circle.fill" : "circle")
-                        .font(.title3)
-                        .foregroundStyle(setLog.isCompleted ? K.Colors.success : K.Colors.surfaceBorder)
+
+                    // Complete / uncomplete button
+                    Button {
+                        if setLog.isCompleted {
+                            onUncomplete?()
+                        } else {
+                            onComplete()
+                        }
+                    } label: {
+                        Image(systemName: setLog.isCompleted
+                              ? (setLog.isSkipped ? "slash.circle.fill" : "checkmark.circle.fill")
+                              : "circle")
+                            .font(.title3)
+                            .foregroundStyle(setLog.isCompleted
+                                             ? (setLog.isSkipped ? K.Colors.tertiary : K.Colors.success)
+                                             : K.Colors.surfaceBorder)
+                    }
+                    .frame(width: 44)
                 }
-                .frame(width: 44)
             }
             .padding(.horizontal, K.Spacing.lg)
             .padding(.vertical, K.Spacing.sm)
             .background(setLog.setType == .warmup ? K.Colors.warmup.opacity(0.3) : Color.clear)
+            .opacity(setLog.isSkipped ? 0.4 : 1.0)
             .onTapGesture(count: 2) {
                 showNote.toggle()
             }

@@ -7,6 +7,7 @@ struct ProgramOverviewView: View {
     @State private var selectedWorkout: Workout?
     @State private var showProgramBuilder = false
     @State private var showTemplateList = false
+    @State private var weekToComplete: Int?
 
     private var program: Program? { activePrograms.first }
 
@@ -27,6 +28,26 @@ struct ProgramOverviewView: View {
         }
         .sheet(isPresented: $showTemplateList) {
             TemplateListView()
+        }
+        .alert("Mark Week Complete",
+               isPresented: Binding(
+                   get: { weekToComplete != nil },
+                   set: { if !$0 { weekToComplete = nil } }
+               )
+        ) {
+            Button("Cancel", role: .cancel) { weekToComplete = nil }
+            Button("Complete All") {
+                if let program, let week = weekToComplete {
+                    let service = ProgramService(modelContext: modelContext)
+                    service.completeWeek(program, week: week)
+                }
+                weekToComplete = nil
+            }
+        } message: {
+            if let week = weekToComplete, let program {
+                let remaining = program.workoutsForWeek(week).filter { !$0.isCompleted }.count
+                Text("Mark all \(remaining) remaining workout\(remaining == 1 ? "" : "s") in Week \(week) as complete?")
+            }
         }
     }
 
@@ -51,8 +72,8 @@ struct ProgramOverviewView: View {
                 .padding(.horizontal, K.Spacing.lg)
                 .padding(.top, K.Spacing.lg)
 
-                // Week grid
-                ForEach(1...program.totalWeeks, id: \.self) { week in
+                // Week grid — current week first, then cycle
+                ForEach(orderedWeeks(for: program), id: \.self) { week in
                     weekRow(week: week, program: program)
                 }
 
@@ -61,12 +82,35 @@ struct ProgramOverviewView: View {
         }
     }
 
+    // MARK: - Week status
+
+    private enum WeekStatus {
+        case current, completed, upcoming
+    }
+
+    private func weekStatus(_ week: Int, program: Program) -> WeekStatus {
+        if week == program.currentWeek { return .current }
+        let workouts = program.workoutsForWeek(week)
+        if !workouts.isEmpty && workouts.allSatisfy(\.isCompleted) { return .completed }
+        return .upcoming
+    }
+
+    // MARK: - Week row
+
     @ViewBuilder
     private func weekRow(week: Int, program: Program) -> some View {
+        let status = weekStatus(week, program: program)
+        let workouts = program.workoutsForWeek(week)
+        let completedCount = workouts.filter(\.isCompleted).count
+        let isCurrent = status == .current
+
         VStack(alignment: .leading, spacing: K.Spacing.sm) {
-            HStack {
+            // Header
+            HStack(spacing: K.Spacing.sm) {
+                // Week number
                 Text("WEEK \(week)")
                     .sectionHeader()
+                    .foregroundStyle(status == .completed ? K.Colors.tertiary : K.Colors.secondary)
 
                 if let block = program.blockForWeek(week) {
                     Text("·")
@@ -74,11 +118,31 @@ struct ProgramOverviewView: View {
                         .font(.caption)
                     Text(block.name.uppercased())
                         .sectionHeader()
+                        .foregroundStyle(status == .completed ? K.Colors.tertiary : K.Colors.secondary)
                 }
 
                 Spacer()
 
-                if week == program.currentWeek {
+                // Completion fraction
+                if !workouts.isEmpty {
+                    Text("\(completedCount)/\(workouts.count)")
+                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(status == .completed ? K.Colors.success : K.Colors.tertiary)
+                }
+
+                // Mark week complete button (only when there are incomplete workouts)
+                if completedCount < workouts.count && !workouts.isEmpty {
+                    Button {
+                        weekToComplete = week
+                    } label: {
+                        Image(systemName: "checkmark.circle")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(K.Colors.tertiary)
+                    }
+                }
+
+                // Status badge
+                if isCurrent {
                     Text("CURRENT")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(K.Colors.accent)
@@ -86,25 +150,76 @@ struct ProgramOverviewView: View {
                         .padding(.vertical, 2)
                         .background(K.Colors.accent.opacity(0.15))
                         .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
+                } else if status == .completed {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(K.Colors.success)
                 }
             }
             .padding(.horizontal, K.Spacing.lg)
 
+            // Week progress bar (current week only)
+            if isCurrent && !workouts.isEmpty {
+                weekProgressBar(completed: completedCount, total: workouts.count)
+                    .padding(.horizontal, K.Spacing.lg)
+            }
+
+            // Workout cells
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: K.Spacing.sm) {
-                    let workouts = program.workoutsForWeek(week)
                     ForEach(workouts) { workout in
-                        workoutCell(workout: workout, week: week, program: program)
+                        if isCurrent {
+                            currentWeekWorkoutCell(workout: workout, program: program)
+                        } else {
+                            compactWorkoutCell(workout: workout, status: status)
+                        }
                     }
                 }
                 .padding(.horizontal, K.Spacing.lg)
             }
         }
+        // Current week gets a card-like container with accent left border
+        .padding(.vertical, isCurrent ? K.Spacing.md : 0)
+        .background(
+            isCurrent
+                ? K.Colors.surface.opacity(0.6)
+                : Color.clear
+        )
+        .overlay(alignment: .leading) {
+            if isCurrent {
+                Rectangle()
+                    .fill(K.Colors.accent)
+                    .frame(width: 3)
+            }
+        }
+        .opacity(status == .completed ? 0.6 : 1.0)
     }
 
+    // MARK: - Week progress bar
+
     @ViewBuilder
-    private func workoutCell(workout: Workout, week: Int, program: Program) -> some View {
-        let isCurrent = week == program.currentWeek && isToday(workout, program: program)
+    private func weekProgressBar(completed: Int, total: Int) -> some View {
+        let fraction = total > 0 ? CGFloat(completed) / CGFloat(total) : 0
+
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 1.5)
+                    .fill(K.Colors.surfaceBorder)
+                    .frame(height: 3)
+
+                RoundedRectangle(cornerRadius: 1.5)
+                    .fill(K.Colors.accent)
+                    .frame(width: geo.size.width * fraction, height: 3)
+            }
+        }
+        .frame(height: 3)
+    }
+
+    // MARK: - Current week workout cell (expanded)
+
+    @ViewBuilder
+    private func currentWeekWorkoutCell(workout: Workout, program: Program) -> some View {
+        let isToday = isToday(workout, program: program)
 
         Button {
             selectedWorkout = workout
@@ -113,7 +228,84 @@ struct ProgramOverviewView: View {
                 HStack {
                     Text("D\(workout.dayIndex + 1)")
                         .font(.system(size: 13, weight: .bold, design: .monospaced))
-                        .foregroundStyle(isCurrent ? K.Colors.accent : K.Colors.secondary)
+                        .foregroundStyle(isToday ? .white : K.Colors.secondary)
+
+                    Spacer()
+
+                    if isToday && !workout.isCompleted {
+                        Text("TODAY")
+                            .font(.system(size: 9, weight: .heavy))
+                            .foregroundStyle(.white.opacity(0.9))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
+                            .background(.white.opacity(0.25))
+                            .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
+                    } else if workout.isCompleted {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(isToday ? .white : K.Colors.success)
+                    }
+                }
+
+                Text(shortWorkoutName(workout.name))
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(isToday ? .white : K.Colors.primary)
+                    .lineLimit(1)
+
+                // Extra details for current week
+                HStack(spacing: K.Spacing.xs) {
+                    Label("\(workout.exercises.count)", systemImage: "figure.strengthtraining.traditional")
+                    Text("·")
+                    Label("~\(workout.estimatedMinutes)m", systemImage: "clock")
+                }
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(isToday ? .white.opacity(0.8) : K.Colors.tertiary)
+
+                // Per-workout progress bar
+                if !workout.isCompleted && workout.completionProgress > 0 {
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 1)
+                                .fill(isToday ? Color.white.opacity(0.2) : K.Colors.surfaceBorder)
+                                .frame(height: 2)
+                            RoundedRectangle(cornerRadius: 1)
+                                .fill(isToday ? Color.white.opacity(0.8) : K.Colors.accent)
+                                .frame(width: geo.size.width * workout.completionProgress, height: 2)
+                        }
+                    }
+                    .frame(height: 2)
+                }
+            }
+            .padding(K.Spacing.md)
+            .frame(width: 120)
+            .background(
+                isToday ? K.Colors.accent :
+                workout.isCompleted ? K.Colors.success.opacity(0.08) :
+                K.Colors.surface
+            )
+            .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
+            .overlay(
+                RoundedRectangle(cornerRadius: K.Radius.sharp)
+                    .stroke(
+                        isToday ? K.Colors.accent : K.Colors.surfaceBorder,
+                        lineWidth: isToday ? 0 : 0.5
+                    )
+            )
+        }
+    }
+
+    // MARK: - Compact workout cell (completed / upcoming weeks)
+
+    @ViewBuilder
+    private func compactWorkoutCell(workout: Workout, status: WeekStatus) -> some View {
+        Button {
+            selectedWorkout = workout
+        } label: {
+            VStack(alignment: .leading, spacing: K.Spacing.xs) {
+                HStack {
+                    Text("D\(workout.dayIndex + 1)")
+                        .font(.system(size: 13, weight: .bold, design: .monospaced))
+                        .foregroundStyle(K.Colors.secondary)
 
                     if workout.isCompleted {
                         Image(systemName: "checkmark")
@@ -124,23 +316,18 @@ struct ProgramOverviewView: View {
 
                 Text(shortWorkoutName(workout.name))
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(K.Colors.primary)
+                    .foregroundStyle(status == .completed ? K.Colors.secondary : K.Colors.primary)
                     .lineLimit(1)
             }
             .padding(K.Spacing.md)
             .frame(width: 90)
             .background(
-                isCurrent ? K.Colors.accent.opacity(0.1) :
-                workout.isCompleted ? K.Colors.success.opacity(0.08) :
-                K.Colors.surface
+                workout.isCompleted ? K.Colors.success.opacity(0.08) : K.Colors.surface
             )
             .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
             .overlay(
                 RoundedRectangle(cornerRadius: K.Radius.sharp)
-                    .stroke(
-                        isCurrent ? K.Colors.accent.opacity(0.3) : K.Colors.surfaceBorder,
-                        lineWidth: isCurrent ? 1 : 0.5
-                    )
+                    .stroke(K.Colors.surfaceBorder, lineWidth: 0.5)
             )
         }
     }
@@ -192,6 +379,16 @@ struct ProgramOverviewView: View {
         let today = TrainingDay.fromDate(Date())
         guard let dayIndex = program.trainingDays.firstIndex(of: today) else { return false }
         return workout.dayIndex == dayIndex
+    }
+
+    /// Returns weeks ordered so the current week appears first,
+    /// followed by subsequent weeks, wrapping around to earlier weeks.
+    private func orderedWeeks(for program: Program) -> [Int] {
+        let total = program.totalWeeks
+        let current = program.currentWeek
+        return (0..<total).map { offset in
+            ((current - 1 + offset) % total) + 1
+        }
     }
 
     private func shortWorkoutName(_ name: String) -> String {

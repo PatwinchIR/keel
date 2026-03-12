@@ -9,11 +9,15 @@
 /* Begin PBXBuildFile section */
 		04FDF137DC937C3332E8DBCB /* StrengthChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C00BA92CBF755EC821F335 /* StrengthChartView.swift */; };
 		071B8E2CD012305945E313B3 /* SubstitutionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1726D62C6008265835EC168E /* SubstitutionSheet.swift */; };
+		08E3BCF18BB3E77432DEDABA /* SpaceGrotesk-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F5E776858A30D5DEAE32C25C /* SpaceGrotesk-Medium.ttf */; };
 		0DA31F407CC6E1DE640C1B7F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247F0FAC66DFFE45AA1E9E8D /* ContentView.swift */; };
+		0E6FD9C92B2AD8D2D1E1549C /* SpaceGrotesk-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85EAADF7F07C75A8BDD31B0F /* SpaceGrotesk-Regular.ttf */; };
 		14063A258479A277372100D7 /* AddOneRMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581EBA0AF0297652D1B1C0B0 /* AddOneRMView.swift */; };
 		16EB106AC4D22A504AD418EA /* TemplateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B290A805BE733536765A78F /* TemplateListView.swift */; };
+		1CB1F53F31169D0FA427FF7B /* FocusFilterIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8314F1C4D2ACC3A9E12D17CB /* FocusFilterIntent.swift */; };
 		2246EADBB4E8DD9B1AD29071 /* TimeRangePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239202085E333BFDC6D83DC6 /* TimeRangePicker.swift */; };
 		25A129BB010B91B805772D7F /* ExerciseFilterPills.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8FFD0D93CFBBCB41950674C /* ExerciseFilterPills.swift */; };
+		2696563E317BD5C5342A41A1 /* SpaceGrotesk-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 892E1EF0C8D4BF5D8B4801DC /* SpaceGrotesk-Light.ttf */; };
 		2741EAD8B1FA80D56E46270B /* KeelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACCE1202BCC4A91FFEE4951 /* KeelApp.swift */; };
 		30C53681FDDA9423A056C277 /* KeelTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA5B641D4C93F5E6F3938C2 /* KeelTheme.swift */; };
 		36EE50C789C01184A4754EB7 /* WorkoutSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9425BA18C0296B7C2B5AC82D /* WorkoutSessionService.swift */; };
@@ -21,12 +25,15 @@
 		3E588B0AF7B1933120791786 /* CardioLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54344C76BB2B2A4DC08E0EB0 /* CardioLog.swift */; };
 		409465258993D2B23DBF4D9E /* SetLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB2C7FB779ABE9F59AB5FAD /* SetLog.swift */; };
 		4909427D85362BE6718E7FD8 /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6887C71C7C6493C82498C7D3 /* Exercise.swift */; };
+		4AC79160AE5D619CFFF5CF54 /* ActivityRingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58759E507F0A6EA884757D1C /* ActivityRingsView.swift */; };
 		4F90858CE95AF5B6A795C8B6 /* BodyCompView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8AAFA819F5896BF69B3FC6 /* BodyCompView.swift */; };
+		5303E7AB25ED7FC4A9A0BC19 /* SpaceGrotesk-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E9AFB5CDEC8598B5A15ADF1D /* SpaceGrotesk-Bold.ttf */; };
 		54BBB5E0D9264BBC2600AECC /* RestTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31867EB6282F62F2C65A4E76 /* RestTimerView.swift */; };
 		652DF05AAE2CF4C705FF05A8 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA7180F043CEAC48F845F23 /* TodayView.swift */; };
 		692A2C3DB0E8150D52AFB297 /* PlateCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20797B54294EB1E59D197725 /* PlateCalculatorView.swift */; };
 		70B6F0443C4CCE3A130E8D93 /* ProgramBuilderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E38A104C90BBAB01FA0676 /* ProgramBuilderView.swift */; };
 		773126A0CBDDB52850BAB1E3 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F1B9F74BA845A4DF4FFCE3 /* ProgressView.swift */; };
+		77FDF0673A9F5E88719F2012 /* ActivityRingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4974FB178CE25B5A1F44109 /* ActivityRingData.swift */; };
 		799FEF6012CE3A6BAAF4B298 /* Program.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73AEC2E7050E38723A718CFD /* Program.swift */; };
 		7BB8CD263FB78E47F35DA4B0 /* ProgramOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7090761EA78FED08AF01D2C /* ProgramOverviewView.swift */; };
 		8AD6D64EF117756AFDCB2C86 /* LiveWorkoutBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2C758CBB824225911E73A4 /* LiveWorkoutBanner.swift */; };
@@ -41,8 +48,10 @@
 		D67D7DBC327234CE3C67E569 /* OneRMCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D444F85E582BCBC1769E6AF3 /* OneRMCalculatorView.swift */; };
 		D929BE06906086C647F89EAB /* ProgramService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E1D724DFB378D8FDEE949A /* ProgramService.swift */; };
 		E1234A7416F8E483DA0393AE /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8630E15BC55AE3A0DB9E139F /* HealthKitService.swift */; };
+		E301AF3F03AE795DBB545831 /* EditOneRMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDE8A90B6CDBDCC3282A278 /* EditOneRMView.swift */; };
 		E6D40813FDF666964E4B4B58 /* PlateCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889B9D9F732834D0154B776 /* PlateCalculator.swift */; };
 		E7D17852ED02D9F87BFB5D89 /* AddCardioSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A221DE4C84F89E2C7BC191 /* AddCardioSheet.swift */; };
+		EC6AE0742F5E7730007A0E1B /* RestDaySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6AE0732F5E7730007A0E1B /* RestDaySettings.swift */; };
 		F44724F65139A5D2140886B4 /* JeffNippardTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04480EDFF911E75A4C17BD77 /* JeffNippardTemplate.swift */; };
 		FA47F389C09A17B2DA3458AC /* OneRepMax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4957B8B085ADB01F7107FC9C /* OneRepMax.swift */; };
 /* End PBXBuildFile section */
@@ -68,11 +77,15 @@
 		4957B8B085ADB01F7107FC9C /* OneRepMax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneRepMax.swift; sourceTree = "<group>"; };
 		54344C76BB2B2A4DC08E0EB0 /* CardioLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioLog.swift; sourceTree = "<group>"; };
 		581EBA0AF0297652D1B1C0B0 /* AddOneRMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddOneRMView.swift; sourceTree = "<group>"; };
+		58759E507F0A6EA884757D1C /* ActivityRingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRingsView.swift; sourceTree = "<group>"; };
 		6887C71C7C6493C82498C7D3 /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
 		6F8AAFA819F5896BF69B3FC6 /* BodyCompView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyCompView.swift; sourceTree = "<group>"; };
 		73AEC2E7050E38723A718CFD /* Program.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Program.swift; sourceTree = "<group>"; };
 		77A221DE4C84F89E2C7BC191 /* AddCardioSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardioSheet.swift; sourceTree = "<group>"; };
+		8314F1C4D2ACC3A9E12D17CB /* FocusFilterIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusFilterIntent.swift; sourceTree = "<group>"; };
+		85EAADF7F07C75A8BDD31B0F /* SpaceGrotesk-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Regular.ttf"; sourceTree = "<group>"; };
 		8630E15BC55AE3A0DB9E139F /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		892E1EF0C8D4BF5D8B4801DC /* SpaceGrotesk-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Light.ttf"; sourceTree = "<group>"; };
 		8F85EBA0A87E3654C8A72166 /* Workout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
 		9425BA18C0296B7C2B5AC82D /* WorkoutSessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionService.swift; sourceTree = "<group>"; };
 		A00B843133CD784E0A2B15F4 /* ExerciseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCardView.swift; sourceTree = "<group>"; };
@@ -80,6 +93,7 @@
 		A8FFD0D93CFBBCB41950674C /* ExerciseFilterPills.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseFilterPills.swift; sourceTree = "<group>"; };
 		B0C00BA92CBF755EC821F335 /* StrengthChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrengthChartView.swift; sourceTree = "<group>"; };
 		B1EC69F65065A6C2FE3658D9 /* ProgramTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramTemplate.swift; sourceTree = "<group>"; };
+		BFDE8A90B6CDBDCC3282A278 /* EditOneRMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOneRMView.swift; sourceTree = "<group>"; };
 		C5E1D724DFB378D8FDEE949A /* ProgramService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramService.swift; sourceTree = "<group>"; };
 		CAE03D135E50D33DFAC56FA7 /* PlateSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateSettings.swift; sourceTree = "<group>"; };
 		D444F85E582BCBC1769E6AF3 /* OneRMCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneRMCalculatorView.swift; sourceTree = "<group>"; };
@@ -87,7 +101,11 @@
 		D7090761EA78FED08AF01D2C /* ProgramOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramOverviewView.swift; sourceTree = "<group>"; };
 		DDA7180F043CEAC48F845F23 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		DFFC4DBF7D60E11E05E9A292 /* Keel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Keel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4974FB178CE25B5A1F44109 /* ActivityRingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRingData.swift; sourceTree = "<group>"; };
+		E9AFB5CDEC8598B5A15ADF1D /* SpaceGrotesk-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Bold.ttf"; sourceTree = "<group>"; };
 		EB9F51008F5680B7967B16CD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EC6AE0732F5E7730007A0E1B /* RestDaySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestDaySettings.swift; sourceTree = "<group>"; };
+		F5E776858A30D5DEAE32C25C /* SpaceGrotesk-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Medium.ttf"; sourceTree = "<group>"; };
 		F62008E177127FC3A2D92064 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -111,6 +129,7 @@
 		3131AB23F9FAD73EF8F15D04 /* Today */ = {
 			isa = PBXGroup;
 			children = (
+				58759E507F0A6EA884757D1C /* ActivityRingsView.swift */,
 				77A221DE4C84F89E2C7BC191 /* AddCardioSheet.swift */,
 				A00B843133CD784E0A2B15F4 /* ExerciseCardView.swift */,
 				0E2C758CBB824225911E73A4 /* LiveWorkoutBanner.swift */,
@@ -136,14 +155,27 @@
 			path = BodyComp;
 			sourceTree = "<group>";
 		};
+		710ED42BF1EADC2068529677 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				E9AFB5CDEC8598B5A15ADF1D /* SpaceGrotesk-Bold.ttf */,
+				892E1EF0C8D4BF5D8B4801DC /* SpaceGrotesk-Light.ttf */,
+				F5E776858A30D5DEAE32C25C /* SpaceGrotesk-Medium.ttf */,
+				85EAADF7F07C75A8BDD31B0F /* SpaceGrotesk-Regular.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		756DFE6A19E2E2C09041E447 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				8314F1C4D2ACC3A9E12D17CB /* FocusFilterIntent.swift */,
 				8630E15BC55AE3A0DB9E139F /* HealthKitService.swift */,
 				0889B9D9F732834D0154B776 /* PlateCalculator.swift */,
 				CAE03D135E50D33DFAC56FA7 /* PlateSettings.swift */,
 				C5E1D724DFB378D8FDEE949A /* ProgramService.swift */,
 				9425BA18C0296B7C2B5AC82D /* WorkoutSessionService.swift */,
+				EC6AE0732F5E7730007A0E1B /* RestDaySettings.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -192,6 +224,7 @@
 		B50EE4CA1841B06CD6EF4E0A /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E4974FB178CE25B5A1F44109 /* ActivityRingData.swift */,
 				D4DD98AD186D93DF30805692 /* BodyComposition.swift */,
 				54344C76BB2B2A4DC08E0EB0 /* CardioLog.swift */,
 				F62008E177127FC3A2D92064 /* Enums.swift */,
@@ -210,6 +243,7 @@
 			children = (
 				581EBA0AF0297652D1B1C0B0 /* AddOneRMView.swift */,
 				0D6367BFED6A8DC6F64CB78D /* ChartTooltipView.swift */,
+				BFDE8A90B6CDBDCC3282A278 /* EditOneRMView.swift */,
 				A8FFD0D93CFBBCB41950674C /* ExerciseFilterPills.swift */,
 				39F1B9F74BA845A4DF4FFCE3 /* ProgressView.swift */,
 				B0C00BA92CBF755EC821F335 /* StrengthChartView.swift */,
@@ -243,6 +277,7 @@
 				24484F9F7D98891FB9522296 /* Keel.entitlements */,
 				0ACCE1202BCC4A91FFEE4951 /* KeelApp.swift */,
 				DB323D749CAFEEA484688F25 /* Data */,
+				710ED42BF1EADC2068529677 /* Fonts */,
 				B50EE4CA1841B06CD6EF4E0A /* Models */,
 				756DFE6A19E2E2C09041E447 /* Services */,
 				2281325CDC56A4A67C18C048 /* Theme */,
@@ -306,6 +341,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AA81895D50289A4D058F06E /* Assets.xcassets in Resources */,
+				5303E7AB25ED7FC4A9A0BC19 /* SpaceGrotesk-Bold.ttf in Resources */,
+				2696563E317BD5C5342A41A1 /* SpaceGrotesk-Light.ttf in Resources */,
+				08E3BCF18BB3E77432DEDABA /* SpaceGrotesk-Medium.ttf in Resources */,
+				0E6FD9C92B2AD8D2D1E1549C /* SpaceGrotesk-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,6 +355,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77FDF0673A9F5E88719F2012 /* ActivityRingData.swift in Sources */,
+				4AC79160AE5D619CFFF5CF54 /* ActivityRingsView.swift in Sources */,
 				E7D17852ED02D9F87BFB5D89 /* AddCardioSheet.swift in Sources */,
 				14063A258479A277372100D7 /* AddOneRMView.swift in Sources */,
 				4F90858CE95AF5B6A795C8B6 /* BodyCompView.swift in Sources */,
@@ -323,10 +364,13 @@
 				3E588B0AF7B1933120791786 /* CardioLog.swift in Sources */,
 				C5B9B5C11961FCB7C506ADBC /* ChartTooltipView.swift in Sources */,
 				0DA31F407CC6E1DE640C1B7F /* ContentView.swift in Sources */,
+				E301AF3F03AE795DBB545831 /* EditOneRMView.swift in Sources */,
 				C53484B979D04A9A54E78D7B /* Enums.swift in Sources */,
+				EC6AE0742F5E7730007A0E1B /* RestDaySettings.swift in Sources */,
 				4909427D85362BE6718E7FD8 /* Exercise.swift in Sources */,
 				8C69D058BF3D16402153F193 /* ExerciseCardView.swift in Sources */,
 				25A129BB010B91B805772D7F /* ExerciseFilterPills.swift in Sources */,
+				1CB1F53F31169D0FA427FF7B /* FocusFilterIntent.swift in Sources */,
 				E1234A7416F8E483DA0393AE /* HealthKitService.swift in Sources */,
 				F44724F65139A5D2140886B4 /* JeffNippardTemplate.swift in Sources */,
 				2741EAD8B1FA80D56E46270B /* KeelApp.swift in Sources */,
@@ -427,7 +471,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Keel/Keel.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = U6Y8P4JU4S;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -445,6 +490,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.keel.app;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -456,7 +502,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Keel/Keel.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = U6Y8P4JU4S;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -474,6 +521,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.keel.app;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

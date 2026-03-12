@@ -21,26 +21,32 @@ struct ChartTooltipView: View {
     let points: [ChartDataPoint]
     let selectedDate: Date
     var displayUnit: WeightUnit = .lbs
-    let chartProxy: ChartProxy
-    let geometryProxy: GeometryProxy
+    let xPosition: CGFloat
+    let containerWidth: CGFloat
 
     private var conversionFactor: Double {
         displayUnit == .kg ? 1.0 / 2.205 : 1.0
     }
 
+    private var snappedDate: Date {
+        let uniqueDates = Set(points.map { Calendar.current.startOfDay(for: $0.date) })
+        return uniqueDates.min(by: {
+            abs($0.timeIntervalSince(selectedDate)) < abs($1.timeIntervalSince(selectedDate))
+        }) ?? selectedDate
+    }
+
     private var nearestPoints: [ChartDataPoint] {
-        // Find all points within ±12 hours of selected date
-        let threshold: TimeInterval = 12 * 60 * 60
-        return points.filter { abs($0.date.timeIntervalSince(selectedDate)) < threshold }
+        let target = snappedDate
+        return points.filter {
+            Calendar.current.isDate($0.date, inSameDayAs: target)
+        }
     }
 
     var body: some View {
         if !nearestPoints.isEmpty {
-            let xPos = chartProxy.position(forX: selectedDate) ?? 0
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(selectedDate.formatted(.dateTime.month(.abbreviated).day().year()))
-                    .font(.system(size: 12, weight: .semibold))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(snappedDate.formatted(.dateTime.month(.abbreviated).day().year()))
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(K.Colors.primary)
 
                 ForEach(nearestPoints) { point in
@@ -49,18 +55,22 @@ struct ChartTooltipView: View {
                             .fill(K.Colors.chartColor(for: point.exerciseName))
                             .frame(width: 6, height: 6)
                         Text(point.exerciseName)
-                            .font(.system(size: 11))
+                            .font(.system(size: 10))
                             .foregroundStyle(K.Colors.secondary)
                             .lineLimit(1)
                         Spacer(minLength: 2)
-                        Text("\(Int(point.estimatedOneRM * conversionFactor)) \(displayUnit.label)")
+                        Text("\(Int(point.estimatedOneRM * conversionFactor))")
                             .font(.system(size: 12, weight: .bold, design: .monospaced))
                             .foregroundStyle(K.Colors.primary)
+                        Text(displayUnit.label)
+                            .font(.system(size: 9))
+                            .foregroundStyle(K.Colors.secondary)
                     }
                 }
             }
-            .padding(K.Spacing.sm)
-            .background(K.Colors.surface)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
             .overlay(
                 RoundedRectangle(cornerRadius: K.Radius.sharp)
@@ -68,8 +78,8 @@ struct ChartTooltipView: View {
             )
             .frame(width: 160)
             .position(
-                x: min(max(xPos, 90), geometryProxy.size.width - 90),
-                y: 20
+                x: min(max(xPosition, 90), containerWidth - 90),
+                y: 16
             )
         }
     }

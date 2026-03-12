@@ -6,8 +6,9 @@ struct SettingsView: View {
     @Query(filter: #Predicate<Program> { $0.isActive == true }) private var activePrograms: [Program]
     @State private var showNewCycleConfirm = false
     @State private var showResetConfirm = false
-    @State private var healthKitService = HealthKitService()
+    @Environment(HealthKitService.self) private var healthKitService
     @Environment(PlateSettings.self) private var plateSettings
+    @Environment(RestDaySettings.self) private var restDaySettings
 
     private var program: Program? { activePrograms.first }
 
@@ -21,6 +22,9 @@ struct SettingsView: View {
                     if let program {
                         programSection(program)
                     }
+
+                    // Rest days section
+                    restDaySection
 
                     // Plate calculator section
                     plateSection
@@ -70,7 +74,27 @@ struct SettingsView: View {
                 .padding(.vertical, K.Spacing.sm)
                 .background(K.Colors.surface)
 
-                settingsRow(label: "Cycle", value: "\(program.currentCycleNumber)")
+                HStack {
+                    Text("Cycle")
+                        .font(.keelBody)
+                        .foregroundStyle(K.Colors.secondary)
+                    Spacer()
+                    Picker("Cycle", selection: Binding(
+                        get: { program.currentCycleNumber },
+                        set: { newCycle in
+                            program.currentCycleNumber = max(1, newCycle)
+                            try? modelContext.save()
+                        }
+                    )) {
+                        ForEach(1...max(program.currentCycleNumber, 20), id: \.self) { cycle in
+                            Text("Cycle \(cycle)").tag(cycle)
+                        }
+                    }
+                    .tint(K.Colors.accent)
+                }
+                .padding(.horizontal, K.Spacing.lg)
+                .padding(.vertical, K.Spacing.sm)
+                .background(K.Colors.surface)
                 settingsRow(label: "Unit", value: program.unit.label)
                 settingsRow(label: "Training Days", value: program.trainingDays.map(\.shortName).joined(separator: ", "))
             }
@@ -121,6 +145,33 @@ struct SettingsView: View {
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("Your workout data will be preserved but the program will no longer be active.")
+        }
+    }
+
+    @ViewBuilder
+    private var restDaySection: some View {
+        VStack(alignment: .leading, spacing: K.Spacing.md) {
+            Text("REST DAYS")
+                .sectionHeader()
+
+            VStack(spacing: 1) {
+                ForEach(TrainingDay.allCases, id: \.rawValue) { day in
+                    HStack {
+                        Text(day.fullName)
+                            .font(.keelBody)
+                            .foregroundStyle(K.Colors.primary)
+                        Spacer()
+                        Toggle("", isOn: Binding(
+                            get: { restDaySettings.isRestDay(day) },
+                            set: { _ in restDaySettings.toggleRestDay(day) }
+                        ))
+                        .tint(K.Colors.accent)
+                    }
+                    .padding(.horizontal, K.Spacing.lg)
+                    .padding(.vertical, K.Spacing.sm)
+                    .background(K.Colors.surface)
+                }
+            }
         }
     }
 

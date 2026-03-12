@@ -5,79 +5,51 @@ struct AddOneRMView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selectedLift: CompoundLift = .squat
-    @State private var weight: String = ""
-    @State private var date = Date()
-    @State private var note: String = ""
+    @State private var date: Date = Date()
+    @State private var weights: [CompoundLift: String] = [:]
+    @State private var notes: [CompoundLift: String] = [:]
+
+    private var hasAnyInput: Bool {
+        weights.values.contains { !$0.isEmpty }
+    }
 
     var body: some View {
         NavigationStack {
             ZStack {
                 K.Colors.background.ignoresSafeArea()
 
-                VStack(spacing: K.Spacing.lg) {
-                    // Lift picker
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: K.Spacing.sm) {
-                            ForEach(CompoundLift.allCases) { lift in
-                                Button {
-                                    selectedLift = lift
-                                } label: {
-                                    Text(lift.displayName)
-                                        .font(.system(size: 13, weight: .bold))
-                                        .foregroundStyle(selectedLift == lift ? K.Colors.background : K.Colors.secondary)
-                                        .padding(.horizontal, K.Spacing.md)
-                                        .padding(.vertical, K.Spacing.sm)
-                                        .background(selectedLift == lift ? lift.chartColor : K.Colors.surface)
-                                        .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
-                                }
-                            }
-                        }
-                    }
-
-                    HStack {
-                        Text("Weight")
-                            .font(.keelBody)
+                ScrollView {
+                    VStack(spacing: K.Spacing.lg) {
+                        // Date picker — shared across all lifts
+                        DatePicker("Date", selection: $date, displayedComponents: .date)
                             .foregroundStyle(K.Colors.primary)
-                        Spacer()
-                        TextField("0", text: $weight)
-                            .font(.keelWeight)
-                            .foregroundStyle(K.Colors.accent)
-                            .multilineTextAlignment(.trailing)
-                            .keyboardType(.decimalPad)
-                            .frame(width: 120)
-                        Text("lbs")
-                            .font(.keelCaption)
-                            .foregroundStyle(K.Colors.secondary)
+                            .tint(K.Colors.accent)
+                            .keelCard()
+
+                        // All lifts inline
+                        ForEach(CompoundLift.allCases) { lift in
+                            liftRow(lift)
+                        }
+
+                        // Save
+                        let filledCount = CompoundLift.allCases.filter { !(weights[$0] ?? "").isEmpty }.count
+                        Button {
+                            saveAll()
+                        } label: {
+                            Text("SAVE\(filledCount > 1 ? " (\(filledCount) RECORDS)" : "")")
+                                .font(.keelHeadline)
+                                .foregroundStyle(K.Colors.background)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, K.Spacing.lg)
+                                .background(hasAnyInput ? K.Colors.accent : K.Colors.tertiary)
+                                .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
+                        }
+                        .disabled(!hasAnyInput)
+
+                        Spacer(minLength: 40)
                     }
-                    .keelCard()
-
-                    DatePicker("Date", selection: $date, displayedComponents: .date)
-                        .foregroundStyle(K.Colors.primary)
-                        .tint(K.Colors.accent)
-                        .keelCard()
-
-                    TextField("Note (optional)", text: $note)
-                        .font(.keelBody)
-                        .foregroundStyle(K.Colors.primary)
-                        .keelCard()
-
-                    Button {
-                        save()
-                    } label: {
-                        Text("SAVE")
-                            .font(.keelHeadline)
-                            .foregroundStyle(K.Colors.background)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, K.Spacing.lg)
-                            .background(K.Colors.accent)
-                            .clipShape(RoundedRectangle(cornerRadius: K.Radius.sharp))
-                    }
-                    .disabled(weight.isEmpty)
-
-                    Spacer()
+                    .padding(K.Spacing.lg)
                 }
-                .padding(K.Spacing.lg)
             }
             .navigationTitle("Add 1RM Record")
             .navigationBarTitleDisplayMode(.inline)
@@ -91,15 +63,61 @@ struct AddOneRMView: View {
         }
     }
 
-    private func save() {
-        guard let w = Double(weight) else { return }
+    @ViewBuilder
+    private func liftRow(_ lift: CompoundLift) -> some View {
+        VStack(spacing: K.Spacing.sm) {
+            HStack {
+                Circle()
+                    .fill(lift.chartColor)
+                    .frame(width: 8, height: 8)
+                Text(lift.displayName)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(K.Colors.primary)
+                Spacer()
+                TextField("0", text: Binding(
+                    get: { weights[lift, default: ""] },
+                    set: { weights[lift] = $0 }
+                ))
+                .font(.keelWeight)
+                .foregroundStyle(K.Colors.accent)
+                .multilineTextAlignment(.trailing)
+                .keyboardType(.decimalPad)
+                .frame(width: 100)
+                Text("lbs")
+                    .font(.keelCaption)
+                    .foregroundStyle(K.Colors.secondary)
+            }
+
+            TextField("Note (optional)", text: Binding(
+                get: { notes[lift, default: ""] },
+                set: { notes[lift] = $0 }
+            ))
+            .font(.system(size: 12))
+            .foregroundStyle(K.Colors.secondary)
+        }
+        .keelCard()
+    }
+
+    private func saveAll() {
         let service = ProgramService(modelContext: modelContext)
-        service.saveOneRepMax(
-            lift: selectedLift,
-            weight: w,
-            cycleNumber: 0,
-            note: note.isEmpty ? nil : note
-        )
+        let cycleNumber = service.activeProgram()?.currentCycleNumber ?? 1
+
+        for lift in CompoundLift.allCases {
+            guard let text = weights[lift],
+                  !text.isEmpty,
+                  let w = Double(text) else { continue }
+
+            let note = notes[lift, default: ""]
+
+            service.saveOneRepMax(
+                lift: lift,
+                weight: w,
+                date: date,
+                cycleNumber: cycleNumber,
+                note: note.isEmpty ? nil : note
+            )
+        }
+        service.syncCycleNumber()
         dismiss()
     }
 }
