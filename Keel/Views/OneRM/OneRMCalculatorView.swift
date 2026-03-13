@@ -10,6 +10,7 @@ struct OneRMCalculatorView: View {
     @State private var weight: String = ""
     @State private var reps: String = ""
     @State private var saved = false
+    @FocusState private var isInputFocused: Bool
 
     private var program: Program? { activePrograms.first }
 
@@ -61,6 +62,7 @@ struct OneRMCalculatorView: View {
                                     .foregroundStyle(K.Colors.primary)
                                     .multilineTextAlignment(.center)
                                     .keyboardType(.decimalPad)
+                                    .focused($isInputFocused)
                                     .onChange(of: weight) { saved = false }
                                 Text("lbs")
                                     .font(.keelCaption)
@@ -81,6 +83,7 @@ struct OneRMCalculatorView: View {
                                 .foregroundStyle(K.Colors.primary)
                                 .multilineTextAlignment(.center)
                                 .keyboardType(.numberPad)
+                                .focused($isInputFocused)
                                 .onChange(of: reps) { saved = false }
                         }
                         .frame(maxWidth: .infinity)
@@ -152,6 +155,11 @@ struct OneRMCalculatorView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .foregroundStyle(K.Colors.accent)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isInputFocused = false }
                         .foregroundStyle(K.Colors.accent)
                 }
             }

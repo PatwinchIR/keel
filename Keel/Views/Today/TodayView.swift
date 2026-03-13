@@ -268,6 +268,10 @@ struct TodayView: View {
                 }
                 .padding(.horizontal, K.Spacing.lg)
             }
+            .scrollDismissesKeyboard(.interactively)
+        }
+        .onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
         .onChange(of: plateSettings.barWeight) { _, _ in plateConfigRevision += 1 }
         .onChange(of: plateSettings.availablePlates) { _, _ in plateConfigRevision += 1 }
@@ -298,7 +302,7 @@ struct TodayView: View {
             Button("Skip", role: .destructive) {
                 if let workout = selectedWorkout {
                     let service = ProgramService(modelContext: modelContext)
-                    service.completeWorkout(workout)
+                    service.completeWorkout(workout, bodyWeight: healthKitService.latestBodyWeight)
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 }
             }
@@ -481,7 +485,7 @@ struct TodayView: View {
     private func completeWorkoutButton(_ workout: Workout) -> some View {
         Button {
             let service = ProgramService(modelContext: modelContext)
-            service.completeWorkout(workout)
+            service.completeWorkout(workout, bodyWeight: healthKitService.latestBodyWeight)
 
             // End live workout session (saves to HealthKit automatically)
             if workoutSession.isSessionActive {
@@ -695,7 +699,7 @@ struct TodayView: View {
             ex.sortedSetLogs.allSatisfy(\.isCompleted)
         }
         if allDone && !workout.isCompleted {
-            service.completeWorkout(workout)
+            service.completeWorkout(workout, bodyWeight: healthKitService.latestBodyWeight)
             workoutSession.endSession()
             showCompletionAlert = true
         }
@@ -717,7 +721,7 @@ struct TodayView: View {
             ex.sortedSetLogs.allSatisfy(\.isCompleted)
         }
         if allDone && !workout.isCompleted {
-            service.completeWorkout(workout)
+            service.completeWorkout(workout, bodyWeight: healthKitService.latestBodyWeight)
             workoutSession.endSession()
             showCompletionAlert = true
         }
@@ -739,7 +743,7 @@ struct TodayView: View {
             ex.sortedSetLogs.allSatisfy(\.isCompleted)
         }
         if allDone && !workout.isCompleted {
-            service.completeWorkout(workout)
+            service.completeWorkout(workout, bodyWeight: healthKitService.latestBodyWeight)
             workoutSession.endSession()
             showCompletionAlert = true
         }

@@ -13,7 +13,7 @@ struct KeelFocusFilter: SetFocusFilterIntent {
 
     func perform() async throws -> some IntentResult {
         // Persist to UserDefaults so app can check on foreground
-        UserDefaults.standard.set(isWorkoutActive, forKey: FocusState.key)
+        UserDefaults.standard.set(isWorkoutActive, forKey: FocusFilterState.key)
 
         // Also post notification for when app is already running
         NotificationCenter.default.post(
@@ -26,7 +26,7 @@ struct KeelFocusFilter: SetFocusFilterIntent {
 }
 
 /// Shared keys for Focus Filter state
-enum FocusState {
+enum FocusFilterState {
     static let key = "keelExternalWorkoutActive"
 
     static var isActive: Bool {

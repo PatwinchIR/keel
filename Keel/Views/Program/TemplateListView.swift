@@ -88,6 +88,7 @@ struct ProgramSetupView: View {
     @State private var deadliftMax: String = "424"
     @State private var ohpMax: String = "160"
     @State private var unit: WeightUnit = .lbs
+    @FocusState private var isInputFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -137,6 +138,11 @@ struct ProgramSetupView: View {
                     Button("Back") { dismiss() }
                         .foregroundStyle(K.Colors.secondary)
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isInputFocused = false }
+                        .foregroundStyle(K.Colors.accent)
+                }
             }
             .toolbarBackground(K.Colors.surface, for: .navigationBar)
         }
@@ -155,6 +161,7 @@ struct ProgramSetupView: View {
                 .foregroundStyle(K.Colors.accent)
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.decimalPad)
+                .focused($isInputFocused)
                 .frame(width: 100)
 
             Text(unit.label)

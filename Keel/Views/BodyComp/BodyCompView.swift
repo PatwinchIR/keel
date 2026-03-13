@@ -112,6 +112,7 @@ struct AddBodyCompView: View {
     @State private var bodyFat: String = ""
     @State private var method: String = ""
     @State private var note: String = ""
+    @FocusState private var isInputFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -134,6 +135,7 @@ struct AddBodyCompView: View {
                             .foregroundStyle(K.Colors.accent)
                             .multilineTextAlignment(.trailing)
                             .keyboardType(.decimalPad)
+                            .focused($isInputFocused)
                             .frame(width: 100)
                         Text("lbs")
                             .font(.keelCaption)
@@ -151,6 +153,7 @@ struct AddBodyCompView: View {
                             .foregroundStyle(K.Colors.accent)
                             .multilineTextAlignment(.trailing)
                             .keyboardType(.decimalPad)
+                            .focused($isInputFocused)
                             .frame(width: 100)
                         Text("%")
                             .font(.keelCaption)
@@ -191,6 +194,11 @@ struct AddBodyCompView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
                         .foregroundStyle(K.Colors.secondary)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isInputFocused = false }
+                        .foregroundStyle(K.Colors.accent)
                 }
             }
             .toolbarBackground(K.Colors.surface, for: .navigationBar)

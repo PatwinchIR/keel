@@ -56,7 +56,8 @@ final class ProgramService {
                         notes: exBP.notes,
                         substitutions: exBP.substitutions,
                         isBodyweight: exBP.isBodyweight,
-                        isDumbbell: exBP.isDumbbell
+                        isDumbbell: exBP.isDumbbell,
+                        muscleGroups: exBP.muscleGroups
                     )
                     exercise.workout = workout
                     workout.exercises.append(exercise)
@@ -85,17 +86,32 @@ final class ProgramService {
             return nil
         }()
 
-        // Warmup sets — populate with pyramid percentages of working weight
-        let warmupPercentages = WarmupDefaults.percentages(
-            for: exercise.name,
-            warmupCount: exercise.warmupSets
-        )
-        for i in 0..<exercise.warmupSets {
-            let warmupWeight: Double? = {
+        // Warmup sets — use plate-based progression for barbell exercises,
+        // percentage-based for dumbbell/bodyweight/no-calculated-weight
+        let isBarbell = !exercise.isBodyweight && !exercise.isDumbbell
+        let warmupReps = WarmupDefaults.reps(for: exercise.warmupSets)
+
+        let warmupWeights: [Double?]
+        if isBarbell, let working = calculatedWeight {
+            warmupWeights = WarmupDefaults.barbellWarmupWeights(
+                workingWeight: working,
+                warmupCount: exercise.warmupSets
+            ).map { Optional($0) }
+        } else {
+            let warmupPercentages = WarmupDefaults.percentages(
+                for: exercise.name,
+                warmupCount: exercise.warmupSets
+            )
+            warmupWeights = (0..<exercise.warmupSets).map { i in
                 guard let working = calculatedWeight, i < warmupPercentages.count else { return nil }
                 return (working * warmupPercentages[i] / 5).rounded() * 5
-            }()
-            let log = SetLog(setNumber: setNumber, setType: .warmup, weight: warmupWeight, reps: 5)
+            }
+        }
+
+        for i in 0..<exercise.warmupSets {
+            let reps = i < warmupReps.count ? warmupReps[i] : 5
+            let weight = i < warmupWeights.count ? warmupWeights[i] : nil
+            let log = SetLog(setNumber: setNumber, setType: .warmup, weight: weight, reps: reps)
             log.exercise = exercise
             exercise.setLogs.append(log)
             setNumber += 1
@@ -249,11 +265,26 @@ final class ProgramService {
                         log.rpe = nil
                         log.note = nil
                     }
-                    for log in exercise.setLogs where log.setType == .warmup {
+                    let warmupLogs = exercise.setLogs.filter { $0.setType == .warmup }.sorted { $0.setNumber < $1.setNumber }
+                    let warmupRepScheme = WarmupDefaults.reps(for: warmupLogs.count)
+                    let isBarbell = !exercise.isBodyweight && !exercise.isDumbbell
+
+                    let warmupWeights: [Double?]
+                    if isBarbell {
+                        warmupWeights = WarmupDefaults.barbellWarmupWeights(
+                            workingWeight: newWeight,
+                            warmupCount: warmupLogs.count
+                        ).map { Optional($0) }
+                    } else {
+                        let warmupPcts = WarmupDefaults.percentages(for: exercise.name, warmupCount: warmupLogs.count)
+                        warmupWeights = warmupPcts.map { (newWeight * $0 / 5).rounded() * 5 }
+                    }
+
+                    for (i, log) in warmupLogs.enumerated() {
                         log.isCompleted = false
                         log.completedAt = nil
-                        log.weight = nil
-                        log.reps = nil
+                        log.weight = i < warmupWeights.count ? warmupWeights[i] : nil
+                        log.reps = i < warmupRepScheme.count ? warmupRepScheme[i] : 5
                     }
                 } else {
                     // Reset RPE-based exercise logs
@@ -275,7 +306,11 @@ final class ProgramService {
 
     // MARK: - Workout Completion
 
-    func completeWorkout(_ workout: Workout) {
+    func completeWorkout(_ workout: Workout, bodyWeight: Double? = nil) {
+        // Snapshot BEFORE marking complete
+        if let program = workout.program {
+            snapshotWorkout(workout, program: program, bodyWeight: bodyWeight)
+        }
         workout.isCompleted = true
         workout.completedAt = Date()
         try? modelContext.save()
@@ -291,11 +326,13 @@ final class ProgramService {
                     log.completedAt = now
                 }
             }
-            workout.isCompleted = true
-            workout.completedAt = now
             if workout.startedAt == nil {
                 workout.startedAt = now
             }
+            // Snapshot before marking complete
+            snapshotWorkout(workout, program: program, bodyWeight: nil)
+            workout.isCompleted = true
+            workout.completedAt = now
         }
         try? modelContext.save()
     }
@@ -312,6 +349,13 @@ final class ProgramService {
         }
 
         try? modelContext.save()
+
+        // Update the live snapshot so partial workouts are always captured
+        if let exercise = setLog.exercise,
+           let workout = exercise.workout,
+           let program = workout.program {
+            snapshotWorkout(workout, program: program)
+        }
     }
 
     func skipSet(_ setLog: SetLog) {
@@ -327,6 +371,13 @@ final class ProgramService {
         }
 
         try? modelContext.save()
+
+        // Update the live snapshot so partial workouts are always captured
+        if let exercise = setLog.exercise,
+           let workout = exercise.workout,
+           let program = workout.program {
+            snapshotWorkout(workout, program: program)
+        }
     }
 
     func skipExercise(_ exercise: Exercise) {
@@ -342,6 +393,12 @@ final class ProgramService {
         }
 
         try? modelContext.save()
+
+        // Update the live snapshot so partial workouts are always captured
+        if let workout = exercise.workout,
+           let program = workout.program {
+            snapshotWorkout(workout, program: program)
+        }
     }
 
     func unmarkSetComplete(_ setLog: SetLog) {
@@ -358,9 +415,28 @@ final class ProgramService {
         }
 
         try? modelContext.save()
+
+        // Update or remove the snapshot
+        if let exercise = setLog.exercise,
+           let workout = exercise.workout,
+           let program = workout.program {
+            let hasAnyCompleted = workout.exercises.contains { ex in
+                ex.setLogs.contains { $0.isCompleted }
+            }
+            if hasAnyCompleted {
+                snapshotWorkout(workout, program: program)
+            } else {
+                deleteSnapshotForWorkout(workout, program: program)
+            }
+        }
     }
 
     func cancelWorkout(_ workout: Workout) {
+        // Delete the snapshot before resetting — cancelling discards the data
+        if let program = workout.program {
+            deleteSnapshotForWorkout(workout, program: program)
+        }
+
         for exercise in workout.exercises {
             for log in exercise.setLogs {
                 log.isCompleted = false
@@ -374,6 +450,35 @@ final class ProgramService {
         workout.completedAt = nil
         workout.startedAt = nil
         try? modelContext.save()
+    }
+
+    /// Deletes today's snapshot for a specific workout (used when cancelling or unchecking all sets).
+    private func deleteSnapshotForWorkout(_ workout: Workout, program: Program) {
+        let calendar = Calendar.current
+        let now = Date()
+        let dayStart = calendar.startOfDay(for: now)
+        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
+        let pName = program.name
+        let cycle = program.currentCycleNumber
+        let week = workout.weekNumber
+        let day = workout.dayIndex
+
+        let descriptor = FetchDescriptor<WorkoutHistory>(
+            predicate: #Predicate<WorkoutHistory> {
+                $0.programName == pName &&
+                $0.cycleNumber == cycle &&
+                $0.weekNumber == week &&
+                $0.dayIndex == day &&
+                $0.completedAt >= dayStart &&
+                $0.completedAt < dayEnd
+            }
+        )
+        if let existing = try? modelContext.fetch(descriptor) {
+            for old in existing {
+                modelContext.delete(old)
+            }
+            try? modelContext.save()
+        }
     }
 
     // MARK: - 1RM
@@ -525,6 +630,238 @@ final class ProgramService {
         return names.sorted()
     }
 
+    // MARK: - Workout History Snapshot
+
+    /// Creates or updates a permanent WorkoutHistory snapshot from a workout.
+    /// Called on every set completion so partial workouts are always captured.
+    /// Only snapshots if the workout has at least one completed set.
+    func snapshotWorkout(_ workout: Workout, program: Program, bodyWeight: Double? = nil) {
+        // Only snapshot if at least one set has been completed
+        let hasCompletedSets = workout.exercises.contains { exercise in
+            exercise.setLogs.contains { $0.isCompleted }
+        }
+        guard hasCompletedSets else { return }
+
+        // Delete any existing snapshot for the same workout on the same calendar day
+        // so we can replace it with the latest state.
+        let calendar = Calendar.current
+        let now = Date()
+        let dayStart = calendar.startOfDay(for: now)
+        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
+        let pName = program.name
+        let cycle = program.currentCycleNumber
+        let week = workout.weekNumber
+        let day = workout.dayIndex
+
+        let descriptor = FetchDescriptor<WorkoutHistory>(
+            predicate: #Predicate<WorkoutHistory> {
+                $0.programName == pName &&
+                $0.cycleNumber == cycle &&
+                $0.weekNumber == week &&
+                $0.dayIndex == day &&
+                $0.completedAt >= dayStart &&
+                $0.completedAt < dayEnd
+            }
+        )
+        if let existing = try? modelContext.fetch(descriptor) {
+            for old in existing {
+                modelContext.delete(old)
+            }
+        }
+
+        let startedAt = workout.startedAt ?? now
+        let completedAt = now
+        let duration = Int(completedAt.timeIntervalSince(startedAt))
+
+        let blockName = program.blockForWeek(workout.weekNumber)?.name
+
+        let history = WorkoutHistory(
+            programName: program.name,
+            workoutName: workout.name,
+            weekNumber: workout.weekNumber,
+            dayIndex: workout.dayIndex,
+            cycleNumber: program.currentCycleNumber,
+            blockName: blockName,
+            startedAt: startedAt,
+            completedAt: completedAt,
+            durationSeconds: max(0, duration),
+            bodyWeight: bodyWeight
+        )
+        modelContext.insert(history)
+
+        // Collect all completed set logs with timestamps for rest time calculation
+        var allCompletedSetLogs: [(setHistory: SetHistory, completedAt: Date)] = []
+
+        for exercise in workout.sortedExercises {
+            let lockedMaxes = program.lockedOneRepMaxes
+            let oneRM: Double? = exercise.percentageOf.flatMap { lockedMaxes[$0] }
+
+            for setLog in exercise.sortedSetLogs {
+                let setHistory = SetHistory(
+                    exerciseName: exercise.displayName,
+                    originalExerciseName: exercise.name,
+                    exerciseOrderIndex: exercise.orderIndex,
+                    setNumber: setLog.setNumber,
+                    setType: setLog.setType,
+                    tag: exercise.tag,
+                    weight: setLog.weight,
+                    reps: setLog.reps,
+                    rpe: setLog.rpe,
+                    isSkipped: setLog.isSkipped,
+                    completedAt: setLog.completedAt,
+                    note: setLog.note,
+                    targetReps: exercise.targetReps,
+                    rpeTarget: exercise.rpeTarget,
+                    percentageUsed: exercise.percentage,
+                    oneRMAtTime: oneRM,
+                    muscleGroups: exercise.muscleGroups
+                )
+                setHistory.workoutHistory = history
+                history.sets.append(setHistory)
+
+                if let completedAt = setLog.completedAt {
+                    allCompletedSetLogs.append((setHistory: setHistory, completedAt: completedAt))
+                }
+            }
+        }
+
+        // Compute rest times globally across the workout
+        let sorted = allCompletedSetLogs.sorted { $0.completedAt < $1.completedAt }
+        for i in 0..<sorted.count {
+            if i < sorted.count - 1 {
+                let gap = Int(sorted[i + 1].completedAt.timeIntervalSince(sorted[i].completedAt))
+                // Ignore gaps > 600s (breaks) or < 5s (logging artifacts)
+                if gap >= 5 && gap <= 600 {
+                    sorted[i].setHistory.restSecondsToNext = gap
+                }
+            }
+        }
+
+        try? modelContext.save()
+    }
+
+    /// One-time migration: snapshot all currently-completed workouts that don't have history yet.
+    func migrateExistingWorkoutHistory() {
+        let key = "keel_workoutHistoryMigrated"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+
+        guard let program = activeProgram() else {
+            UserDefaults.standard.set(true, forKey: key)
+            return
+        }
+
+        let completedWorkouts = program.workouts.filter(\.isCompleted)
+        for workout in completedWorkouts {
+            snapshotWorkout(workout, program: program, bodyWeight: nil)
+        }
+
+        UserDefaults.standard.set(true, forKey: key)
+    }
+
+    // MARK: - Workout History Queries
+
+    func allWorkoutHistory() -> [WorkoutHistory] {
+        let descriptor = FetchDescriptor<WorkoutHistory>(
+            sortBy: [SortDescriptor(\.completedAt, order: .reverse)]
+        )
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    func workoutHistory(named: String) -> [WorkoutHistory] {
+        let descriptor = FetchDescriptor<WorkoutHistory>(
+            predicate: #Predicate { $0.workoutName == named },
+            sortBy: [SortDescriptor(\.completedAt, order: .reverse)]
+        )
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    func workoutHistory(cycle: Int) -> [WorkoutHistory] {
+        let descriptor = FetchDescriptor<WorkoutHistory>(
+            predicate: #Predicate { $0.cycleNumber == cycle },
+            sortBy: [SortDescriptor(\.completedAt, order: .reverse)]
+        )
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    func workoutHistory(from: Date, to: Date) -> [WorkoutHistory] {
+        let descriptor = FetchDescriptor<WorkoutHistory>(
+            predicate: #Predicate { $0.completedAt >= from && $0.completedAt <= to },
+            sortBy: [SortDescriptor(\.completedAt, order: .reverse)]
+        )
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    func distinctWorkoutNames() -> [String] {
+        let all = allWorkoutHistory()
+        let names = Set(all.map(\.workoutName))
+        return names.sorted()
+    }
+
+    func totalVolume(cycle: Int? = nil) -> Double {
+        let history = cycle.map { workoutHistory(cycle: $0) } ?? allWorkoutHistory()
+        return history.reduce(0) { $0 + $1.totalVolume }
+    }
+
+    func averageDuration(cycle: Int? = nil) -> Double {
+        let history = cycle.map { workoutHistory(cycle: $0) } ?? allWorkoutHistory()
+        guard !history.isEmpty else { return 0 }
+        let total = history.reduce(0) { $0 + $1.durationSeconds }
+        return Double(total) / Double(history.count)
+    }
+
+    func workoutCount(cycle: Int? = nil) -> Int {
+        let history = cycle.map { workoutHistory(cycle: $0) } ?? allWorkoutHistory()
+        return history.count
+    }
+
+    func exerciseVolumeHistory(exerciseName: String) -> [(date: Date, volume: Double)] {
+        let all = allWorkoutHistory()
+        var result: [(date: Date, volume: Double)] = []
+        for wh in all {
+            let exerciseSets = wh.sets.filter { $0.exerciseName == exerciseName && !$0.isSkipped && $0.setType == .working }
+            if !exerciseSets.isEmpty {
+                let vol = exerciseSets.reduce(0.0) { $0 + $1.volume }
+                result.append((date: wh.completedAt, volume: vol))
+            }
+        }
+        return result.sorted { $0.date < $1.date }
+    }
+
+    func workoutTrends(named: String? = nil, timeRange: TimeRange? = nil) -> [(date: Date, volume: Double, durationMinutes: Int, avgRestSeconds: Double?)] {
+        var history: [WorkoutHistory]
+        if let name = named {
+            history = workoutHistory(named: name)
+        } else {
+            history = allWorkoutHistory()
+        }
+
+        if let floor = timeRange?.dateFloor {
+            history = history.filter { $0.completedAt >= floor }
+        }
+
+        return history.map { wh in
+            (date: wh.completedAt, volume: wh.totalVolume, durationMinutes: wh.durationSeconds / 60, avgRestSeconds: wh.averageRestSeconds)
+        }.sorted { $0.date < $1.date }
+    }
+
+    func averageRestTime(cycle: Int? = nil) -> Double? {
+        let history = cycle.map { workoutHistory(cycle: $0) } ?? allWorkoutHistory()
+        let restValues = history.compactMap(\.averageRestSeconds)
+        guard !restValues.isEmpty else { return nil }
+        return restValues.reduce(0, +) / Double(restValues.count)
+    }
+
+    func totalTrainingHours(cycle: Int? = nil) -> Double {
+        let history = cycle.map { workoutHistory(cycle: $0) } ?? allWorkoutHistory()
+        let totalSeconds = history.reduce(0) { $0 + $1.durationSeconds }
+        return Double(totalSeconds) / 3600.0
+    }
+
+    func deleteWorkoutHistory(_ record: WorkoutHistory) {
+        modelContext.delete(record)
+        try? modelContext.save()
+    }
+
     /// Builds estimated 1RM history for ALL exercises in a single fetch pass.
     /// Returns a dictionary mapping exercise display name to its daily max estimated 1RM entries.
     func allEstimatedOneRMHistories() -> [String: [(date: Date, estimated1RM: Double)]] {
@@ -568,6 +905,28 @@ enum WarmupDefaults {
         5: [0.30, 0.45, 0.55, 0.70, 0.80],
     ]
 
+    /// Descending rep scheme for warmup sets: start high, taper down toward working reps.
+    private static let defaultReps: [Int: [Int]] = [
+        1: [8],
+        2: [12, 8],
+        3: [12, 10, 8],
+        4: [12, 10, 8, 6],
+        5: [12, 10, 8, 6, 5],
+    ]
+
+    /// Returns the rep counts for each warmup set (descending from 12).
+    static func reps(for warmupCount: Int) -> [Int] {
+        if let preset = defaultReps[warmupCount] { return preset }
+        guard warmupCount > 0 else { return [] }
+        // Generate descending reps from 12 down to 5 for any count
+        return (0..<warmupCount).map { i in
+            let start = 12
+            let end = 5
+            let step = warmupCount > 1 ? Double(start - end) / Double(warmupCount - 1) : 0
+            return max(end, start - Int((step * Double(i)).rounded()))
+        }
+    }
+
     private static let userDefaultsKey = "customWarmupWeights"
 
     /// Returns pyramid percentages for an exercise. If the user has saved custom
@@ -589,6 +948,69 @@ enum WarmupDefaults {
             let end = 0.80
             let step = count > 1 ? (end - start) / Double(count - 1) : 0
             return start + step * Double(i)
+        }
+    }
+
+    /// Plate-based warmup weights for barbell exercises.
+    /// Builds warmup sets by progressively adding plates toward the working weight:
+    ///   W1: bar only (45 lbs)
+    ///   W2: bar + 25 per side (95 lbs)
+    ///   W3: bar + 45 per side (135 lbs)
+    ///   ... continuing until close to working weight
+    /// Returns actual weight values (not percentages).
+    static func barbellWarmupWeights(workingWeight: Double, warmupCount: Int, barWeight: Double = 45) -> [Double] {
+        guard warmupCount > 0, workingWeight > barWeight else {
+            return Array(repeating: barWeight, count: warmupCount)
+        }
+
+        // Standard plate landmarks: bar, bar+25/side, bar+45/side,
+        // bar+45+25/side, bar+45+45/side, etc.
+        // For 45lb bar: 45, 95, 135, 185, 225, 275, 315, 365...
+        let landmarks: [Double] = {
+            var result: [Double] = [barWeight]
+            // Alternating: +25 per side, then swap to next 45 per side
+            var platesPerSide: [Double] = []
+            let availablePlates: [Double] = [25, 45, 25, 45, 25, 45, 25, 45]
+            for plate in availablePlates {
+                if plate == 25 {
+                    platesPerSide.append(plate)
+                } else {
+                    // Replace the last 25 with a 45
+                    if let lastIdx = platesPerSide.lastIndex(of: 25) {
+                        platesPerSide[lastIdx] = 45
+                    } else {
+                        platesPerSide.append(45)
+                    }
+                }
+                let total = barWeight + platesPerSide.reduce(0, +) * 2
+                result.append(total)
+            }
+            return result
+        }()
+
+        // Filter to landmarks below working weight
+        let rungs = landmarks.filter { $0 < workingWeight }
+
+        if rungs.count <= warmupCount {
+            // Not enough rungs — fill remaining with evenly spaced weights
+            var result = rungs
+            let remaining = warmupCount - result.count
+            if remaining > 0 {
+                let lastRung = result.last ?? barWeight
+                let gap = workingWeight - lastRung
+                for i in 1...remaining {
+                    let w = lastRung + gap * Double(i) / Double(remaining + 1)
+                    result.append((w / 5).rounded() * 5)
+                }
+            }
+            return result
+        } else {
+            // More rungs than warmup sets — always start with bar,
+            // then pick from the remaining rungs closest to working weight
+            var result: [Double] = [barWeight]
+            let tail = Array(rungs.suffix(warmupCount - 1))
+            result.append(contentsOf: tail)
+            return result
         }
     }
 

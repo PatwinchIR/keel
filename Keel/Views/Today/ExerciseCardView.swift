@@ -330,12 +330,14 @@ struct SetRowView: View {
     var onUncomplete: (() -> Void)? = nil
     var onSkip: (() -> Void)? = nil
     @State private var showNote = false
+    @FocusState private var isInputFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
                 // Set label
                 Text(setLog.setType == .warmup ? "W\(displayNumber ?? (setLog.setNumber + 1))" : "S\(displayNumber ?? (setLog.setNumber + 1))")
+
                     .font(.system(size: 13, weight: .medium, design: .monospaced))
                     .foregroundStyle(setLog.setType == .warmup ? K.Colors.tertiary : K.Colors.secondary)
                     .frame(width: 40, alignment: .leading)
@@ -347,6 +349,7 @@ struct SetRowView: View {
                         .foregroundStyle(K.Colors.primary)
                         .multilineTextAlignment(.center)
                         .keyboardType(.decimalPad)
+                        .focused($isInputFocused)
                         .frame(maxWidth: .infinity)
                     Text(isDumbbellExercise ? "lbs/db" : (isBodyweightExercise ? "+lbs" : "lbs"))
                         .font(.system(size: 11))
@@ -359,6 +362,7 @@ struct SetRowView: View {
                     .foregroundStyle(K.Colors.primary)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
+                    .focused($isInputFocused)
                     .frame(width: 60)
 
                 // RPE
@@ -367,6 +371,7 @@ struct SetRowView: View {
                     .foregroundStyle(K.Colors.secondary)
                     .multilineTextAlignment(.center)
                     .keyboardType(.decimalPad)
+                    .focused($isInputFocused)
                     .frame(width: 50)
 
                 // Action buttons (skip + complete/uncomplete)
@@ -428,6 +433,13 @@ struct SetRowView: View {
                 }
                 .padding(.horizontal, K.Spacing.lg)
                 .padding(.bottom, K.Spacing.xs)
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { isInputFocused = false }
+                    .foregroundStyle(K.Colors.accent)
             }
         }
     }

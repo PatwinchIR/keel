@@ -67,7 +67,7 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
     /// Called on app foreground — only stop stale external sessions, never start new ones.
     /// Starting is handled exclusively by the Focus Filter intent notification.
     func checkFocusState() {
-        if !FocusState.isActive && sessionMode == .external {
+        if !FocusFilterState.isActive && sessionMode == .external {
             stopExternalObservation()
         }
     }
@@ -185,7 +185,7 @@ final class WorkoutSessionService: NSObject, @unchecked Sendable {
         stopHeartRateQuery()
         stopCalorieQuery()
         // Clear persisted focus state so it doesn't restart on next foreground
-        UserDefaults.standard.set(false, forKey: FocusState.key)
+        UserDefaults.standard.set(false, forKey: FocusFilterState.key)
         resetState()
     }
 

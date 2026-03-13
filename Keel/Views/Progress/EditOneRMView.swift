@@ -11,6 +11,7 @@ struct EditOneRMView: View {
     @State private var date: Date = Date()
     @State private var note: String = ""
     @State private var showDeleteConfirm = false
+    @FocusState private var isInputFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -39,6 +40,7 @@ struct EditOneRMView: View {
                             .foregroundStyle(K.Colors.accent)
                             .multilineTextAlignment(.trailing)
                             .keyboardType(.decimalPad)
+                            .focused($isInputFocused)
                             .frame(width: 120)
                         Text("lbs")
                             .font(.keelCaption)
@@ -91,6 +93,11 @@ struct EditOneRMView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
                         .foregroundStyle(K.Colors.secondary)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isInputFocused = false }
+                        .foregroundStyle(K.Colors.accent)
                 }
             }
             .toolbarBackground(K.Colors.surface, for: .navigationBar)

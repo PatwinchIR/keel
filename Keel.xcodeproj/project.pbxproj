@@ -52,6 +52,11 @@
 		E6D40813FDF666964E4B4B58 /* PlateCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889B9D9F732834D0154B776 /* PlateCalculator.swift */; };
 		E7D17852ED02D9F87BFB5D89 /* AddCardioSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A221DE4C84F89E2C7BC191 /* AddCardioSheet.swift */; };
 		EC6AE0742F5E7730007A0E1B /* RestDaySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6AE0732F5E7730007A0E1B /* RestDaySettings.swift */; };
+		EC7F35512F638B3C00636B00 /* WorkoutHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F35502F638B3C00636B00 /* WorkoutHistory.swift */; };
+		EC7F35532F638B4800636B00 /* SetHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F35522F638B4800636B00 /* SetHistory.swift */; };
+		EC7F35552F638C1200636B00 /* WorkoutAnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F35542F638C1200636B00 /* WorkoutAnalyticsView.swift */; };
+		EC7F35572F638C2400636B00 /* WorkoutHistoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F35562F638C2400636B00 /* WorkoutHistoryRow.swift */; };
+		EC7F35592F638C4100636B00 /* WorkoutHistoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F35582F638C4100636B00 /* WorkoutHistoryDetailView.swift */; };
 		F44724F65139A5D2140886B4 /* JeffNippardTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04480EDFF911E75A4C17BD77 /* JeffNippardTemplate.swift */; };
 		FA47F389C09A17B2DA3458AC /* OneRepMax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4957B8B085ADB01F7107FC9C /* OneRepMax.swift */; };
 /* End PBXBuildFile section */
@@ -105,6 +110,11 @@
 		E9AFB5CDEC8598B5A15ADF1D /* SpaceGrotesk-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Bold.ttf"; sourceTree = "<group>"; };
 		EB9F51008F5680B7967B16CD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EC6AE0732F5E7730007A0E1B /* RestDaySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestDaySettings.swift; sourceTree = "<group>"; };
+		EC7F35502F638B3C00636B00 /* WorkoutHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutHistory.swift; sourceTree = "<group>"; };
+		EC7F35522F638B4800636B00 /* SetHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetHistory.swift; sourceTree = "<group>"; };
+		EC7F35542F638C1200636B00 /* WorkoutAnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutAnalyticsView.swift; sourceTree = "<group>"; };
+		EC7F35562F638C2400636B00 /* WorkoutHistoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutHistoryRow.swift; sourceTree = "<group>"; };
+		EC7F35582F638C4100636B00 /* WorkoutHistoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutHistoryDetailView.swift; sourceTree = "<group>"; };
 		F5E776858A30D5DEAE32C25C /* SpaceGrotesk-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Medium.ttf"; sourceTree = "<group>"; };
 		F62008E177127FC3A2D92064 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -234,6 +244,8 @@
 				B1EC69F65065A6C2FE3658D9 /* ProgramTemplate.swift */,
 				0DB2C7FB779ABE9F59AB5FAD /* SetLog.swift */,
 				8F85EBA0A87E3654C8A72166 /* Workout.swift */,
+				EC7F35502F638B3C00636B00 /* WorkoutHistory.swift */,
+				EC7F35522F638B4800636B00 /* SetHistory.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -248,6 +260,9 @@
 				39F1B9F74BA845A4DF4FFCE3 /* ProgressView.swift */,
 				B0C00BA92CBF755EC821F335 /* StrengthChartView.swift */,
 				239202085E333BFDC6D83DC6 /* TimeRangePicker.swift */,
+				EC7F35542F638C1200636B00 /* WorkoutAnalyticsView.swift */,
+				EC7F35562F638C2400636B00 /* WorkoutHistoryRow.swift */,
+				EC7F35582F638C4100636B00 /* WorkoutHistoryDetailView.swift */,
 			);
 			path = Progress;
 			sourceTree = "<group>";
@@ -361,8 +376,10 @@
 				14063A258479A277372100D7 /* AddOneRMView.swift in Sources */,
 				4F90858CE95AF5B6A795C8B6 /* BodyCompView.swift in Sources */,
 				A4C308516BE7D313379593F0 /* BodyComposition.swift in Sources */,
+				EC7F35592F638C4100636B00 /* WorkoutHistoryDetailView.swift in Sources */,
 				3E588B0AF7B1933120791786 /* CardioLog.swift in Sources */,
 				C5B9B5C11961FCB7C506ADBC /* ChartTooltipView.swift in Sources */,
+				EC7F35512F638B3C00636B00 /* WorkoutHistory.swift in Sources */,
 				0DA31F407CC6E1DE640C1B7F /* ContentView.swift in Sources */,
 				E301AF3F03AE795DBB545831 /* EditOneRMView.swift in Sources */,
 				C53484B979D04A9A54E78D7B /* Enums.swift in Sources */,
@@ -379,17 +396,20 @@
 				D67D7DBC327234CE3C67E569 /* OneRMCalculatorView.swift in Sources */,
 				FA47F389C09A17B2DA3458AC /* OneRepMax.swift in Sources */,
 				E6D40813FDF666964E4B4B58 /* PlateCalculator.swift in Sources */,
+				EC7F35532F638B4800636B00 /* SetHistory.swift in Sources */,
 				692A2C3DB0E8150D52AFB297 /* PlateCalculatorView.swift in Sources */,
 				B05CD3CEBCA11945D5846309 /* PlateSettings.swift in Sources */,
 				799FEF6012CE3A6BAAF4B298 /* Program.swift in Sources */,
 				70B6F0443C4CCE3A130E8D93 /* ProgramBuilderView.swift in Sources */,
 				7BB8CD263FB78E47F35DA4B0 /* ProgramOverviewView.swift in Sources */,
+				EC7F35572F638C2400636B00 /* WorkoutHistoryRow.swift in Sources */,
 				D929BE06906086C647F89EAB /* ProgramService.swift in Sources */,
 				CD075E6D123C23171CD76734 /* ProgramTemplate.swift in Sources */,
 				773126A0CBDDB52850BAB1E3 /* ProgressView.swift in Sources */,
 				54BBB5E0D9264BBC2600AECC /* RestTimerView.swift in Sources */,
 				409465258993D2B23DBF4D9E /* SetLog.swift in Sources */,
 				BB10D612C491564D0FB981A2 /* SettingsView.swift in Sources */,
+				EC7F35552F638C1200636B00 /* WorkoutAnalyticsView.swift in Sources */,
 				04FDF137DC937C3332E8DBCB /* StrengthChartView.swift in Sources */,
 				071B8E2CD012305945E313B3 /* SubstitutionSheet.swift in Sources */,
 				16EB106AC4D22A504AD418EA /* TemplateListView.swift in Sources */,

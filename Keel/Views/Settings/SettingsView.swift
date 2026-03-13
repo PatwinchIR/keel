@@ -9,6 +9,7 @@ struct SettingsView: View {
     @Environment(HealthKitService.self) private var healthKitService
     @Environment(PlateSettings.self) private var plateSettings
     @Environment(RestDaySettings.self) private var restDaySettings
+    @FocusState private var isInputFocused: Bool
 
     private var program: Program? { activePrograms.first }
 
@@ -39,6 +40,13 @@ struct SettingsView: View {
                 }
                 .padding(K.Spacing.lg)
                 .padding(.top, K.Spacing.lg)
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isInputFocused = false }
+                        .foregroundStyle(K.Colors.accent)
+                }
             }
         }
     }
@@ -216,6 +224,7 @@ struct SettingsView: View {
                             .foregroundStyle(K.Colors.primary)
                             .multilineTextAlignment(.trailing)
                             .keyboardType(.decimalPad)
+                            .focused($isInputFocused)
                             .frame(width: 60)
                         Text(plateSettings.weightUnit.label)
                             .font(.keelCaption)

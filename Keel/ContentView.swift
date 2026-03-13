@@ -67,6 +67,7 @@ struct ContentView: View {
                 let service = ProgramService(modelContext: modelContext)
                 service.migrateExerciseNames()
                 service.migrateLockedOneRepMaxes()
+                service.migrateExistingWorkoutHistory()
                 service.checkWeekTransition()
             }
         }

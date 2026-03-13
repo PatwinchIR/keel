@@ -80,6 +80,7 @@ struct ExerciseBlueprint {
     let substitutions: [String]
     let isBodyweight: Bool
     let isDumbbell: Bool
+    let muscleGroups: [MuscleGroup]
 
     init(
         name: String,
@@ -96,7 +97,8 @@ struct ExerciseBlueprint {
         notes: String = "",
         substitutions: [String] = [],
         isBodyweight: Bool = false,
-        isDumbbell: Bool = false
+        isDumbbell: Bool = false,
+        muscleGroups: [MuscleGroup]? = nil
     ) {
         self.name = name
         self.orderIndex = orderIndex
@@ -113,5 +115,7 @@ struct ExerciseBlueprint {
         self.substitutions = substitutions
         self.isBodyweight = isBodyweight
         self.isDumbbell = isDumbbell
+        // Use explicit muscle groups if provided, otherwise derive from the exercise name
+        self.muscleGroups = muscleGroups ?? MuscleGroup.forExercise(name)
     }
 }

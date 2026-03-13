@@ -6,6 +6,9 @@ final class HealthKitService: @unchecked Sendable {
     let healthStore = HKHealthStore()
     var isAuthorized = false
     var latestBodyWeight: Double?
+    var bodyWeightHistory: [(date: Date, weight: Double)] = []
+    var bodyFatHistory: [(date: Date, bodyFat: Double)] = []
+    var leanBodyMassHistory: [(date: Date, mass: Double)] = []
     var activityRings = ActivityRingData()
 
     private var activityTimer: Timer?
@@ -24,6 +27,8 @@ final class HealthKitService: @unchecked Sendable {
 
         let typesToRead: Set<HKObjectType> = [
             HKObjectType.quantityType(forIdentifier: .bodyMass)!,
+            HKObjectType.quantityType(forIdentifier: .bodyFatPercentage)!,
+            HKObjectType.quantityType(forIdentifier: .leanBodyMass)!,
             HKObjectType.quantityType(forIdentifier: .heartRate)!,
             HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
             HKObjectType.quantityType(forIdentifier: .appleExerciseTime)!,
@@ -35,6 +40,9 @@ final class HealthKitService: @unchecked Sendable {
             try await healthStore.requestAuthorization(toShare: typesToWrite, read: typesToRead)
             isAuthorized = true
             await fetchLatestBodyWeight()
+            await fetchBodyWeightHistory()
+            await fetchBodyFatHistory()
+            await fetchLeanBodyMassHistory()
             fetchTodayActivitySummary()
         } catch {
             print("HealthKit authorization failed: \(error)")
@@ -60,6 +68,72 @@ final class HealthKitService: @unchecked Sendable {
             }
         }
 
+        healthStore.execute(query)
+    }
+
+    func fetchBodyWeightHistory() async {
+        guard isAvailable, isAuthorized else { return }
+        guard let bodyMassType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else { return }
+
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+        let query = HKSampleQuery(
+            sampleType: bodyMassType,
+            predicate: nil,
+            limit: HKObjectQueryNoLimit,
+            sortDescriptors: [sortDescriptor]
+        ) { [weak self] _, samples, _ in
+            guard let samples = samples as? [HKQuantitySample] else { return }
+            let history = samples.map { sample in
+                (date: sample.startDate, weight: sample.quantity.doubleValue(for: .pound()))
+            }
+            Task { @MainActor [weak self] in
+                self?.bodyWeightHistory = history
+            }
+        }
+        healthStore.execute(query)
+    }
+
+    func fetchBodyFatHistory() async {
+        guard isAvailable, isAuthorized else { return }
+        guard let bodyFatType = HKQuantityType.quantityType(forIdentifier: .bodyFatPercentage) else { return }
+
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+        let query = HKSampleQuery(
+            sampleType: bodyFatType,
+            predicate: nil,
+            limit: HKObjectQueryNoLimit,
+            sortDescriptors: [sortDescriptor]
+        ) { [weak self] _, samples, _ in
+            guard let samples = samples as? [HKQuantitySample] else { return }
+            let history = samples.map { sample in
+                (date: sample.startDate, bodyFat: sample.quantity.doubleValue(for: .percent()) * 100)
+            }
+            Task { @MainActor [weak self] in
+                self?.bodyFatHistory = history
+            }
+        }
+        healthStore.execute(query)
+    }
+
+    func fetchLeanBodyMassHistory() async {
+        guard isAvailable, isAuthorized else { return }
+        guard let lbmType = HKQuantityType.quantityType(forIdentifier: .leanBodyMass) else { return }
+
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+        let query = HKSampleQuery(
+            sampleType: lbmType,
+            predicate: nil,
+            limit: HKObjectQueryNoLimit,
+            sortDescriptors: [sortDescriptor]
+        ) { [weak self] _, samples, _ in
+            guard let samples = samples as? [HKQuantitySample] else { return }
+            let history = samples.map { sample in
+                (date: sample.startDate, mass: sample.quantity.doubleValue(for: .pound()))
+            }
+            Task { @MainActor [weak self] in
+                self?.leanBodyMassHistory = history
+            }
+        }
         healthStore.execute(query)
     }
 

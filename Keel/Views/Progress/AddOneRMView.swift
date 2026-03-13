@@ -8,6 +8,7 @@ struct AddOneRMView: View {
     @State private var date: Date = Date()
     @State private var weights: [CompoundLift: String] = [:]
     @State private var notes: [CompoundLift: String] = [:]
+    @FocusState private var isInputFocused: Bool
 
     private var hasAnyInput: Bool {
         weights.values.contains { !$0.isEmpty }
@@ -58,6 +59,11 @@ struct AddOneRMView: View {
                     Button("Cancel") { dismiss() }
                         .foregroundStyle(K.Colors.secondary)
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isInputFocused = false }
+                        .foregroundStyle(K.Colors.accent)
+                }
             }
             .toolbarBackground(K.Colors.surface, for: .navigationBar)
         }
@@ -82,6 +88,7 @@ struct AddOneRMView: View {
                 .foregroundStyle(K.Colors.accent)
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.decimalPad)
+                .focused($isInputFocused)
                 .frame(width: 100)
                 Text("lbs")
                     .font(.keelCaption)

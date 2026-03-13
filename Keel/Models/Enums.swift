@@ -334,6 +334,155 @@ enum TimeRange: String, CaseIterable, Identifiable {
     }
 }
 
+enum MuscleGroup: String, Codable, CaseIterable, Identifiable {
+    case chest, back, shoulders, biceps, triceps
+    case quads, hamstrings, glutes, calves, core
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .chest: return "Chest"
+        case .back: return "Back"
+        case .shoulders: return "Shoulders"
+        case .biceps: return "Biceps"
+        case .triceps: return "Triceps"
+        case .quads: return "Quads"
+        case .hamstrings: return "Hamstrings"
+        case .glutes: return "Glutes"
+        case .calves: return "Calves"
+        case .core: return "Core"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .chest: return Color(hex: 0xE07B53)     // coral
+        case .back: return Color(hex: 0x5B9BD5)       // steel blue
+        case .shoulders: return Color(hex: 0xC46BAE)   // mauve
+        case .biceps: return Color(hex: 0x7EC699)      // light green
+        case .triceps: return Color(hex: 0xD4C04A)     // mustard
+        case .quads: return Color(hex: 0x3D8B5E)       // forest green
+        case .hamstrings: return Color(hex: 0x2E7D7D)  // teal
+        case .glutes: return Color(hex: 0xB07CD8)      // violet
+        case .calves: return Color(hex: 0xD98C5F)      // burnt orange
+        case .core: return Color(hex: 0x6BB5B5)        // seafoam
+        }
+    }
+
+    var shortName: String {
+        switch self {
+        case .chest: return "Chest"
+        case .back: return "Back"
+        case .shoulders: return "Delts"
+        case .biceps: return "Bis"
+        case .triceps: return "Tris"
+        case .quads: return "Quads"
+        case .hamstrings: return "Hams"
+        case .glutes: return "Glutes"
+        case .calves: return "Calves"
+        case .core: return "Core"
+        }
+    }
+
+    /// Lookup table mapping exercise names to their primary muscle groups.
+    /// Covers all exercises in the Jeff Nippard Full Body 5x template and common substitutions.
+    static func forExercise(_ name: String) -> [MuscleGroup] {
+        switch name {
+        // Compounds — Squat
+        case "Back Squat":                                  return [.quads, .glutes]
+        // Compounds — Bench
+        case "Bench Press":                                 return [.chest, .triceps, .shoulders]
+        // Compounds — Deadlift
+        case "Deadlift", "Reset Deadlift", "Sumo deadlift": return [.back, .hamstrings, .glutes]
+        // Compounds — OHP
+        case "Overhead Press":                              return [.shoulders, .triceps]
+
+        // Chest accessories
+        case "DB Incline Press", "Barbell incline press":   return [.chest, .shoulders]
+        case "Low Incline DB Press",
+             "Low incline machine press",
+             "Low incline barbell press":                   return [.chest]
+        case "Low to High Cable Flye", "Pec deck", "DB flye": return [.chest]
+        case "Decline Bench Press":                         return [.chest, .triceps]
+        case "Deficit push-up":                             return [.chest, .triceps]
+        case "Push Up":                                     return [.chest, .triceps, .shoulders]
+        case "Dip":                                         return [.chest, .triceps]
+
+        // Back accessories
+        case "Chin-Up", "Neutral-grip pull-up":             return [.back, .biceps]
+        case "Pronated Pulldown", "Pull-up",
+             "Supinated pulldown",
+             "Wide Grip Lat Pulldown", "Lat pulldown":      return [.back]
+        case "Weighted Pullup":                             return [.back, .biceps]
+        case "Dumbbell Row", "DB row",
+             "Cable row", "Chest-supported row":            return [.back]
+        case "Humble Row":                                  return [.back]
+        case "Chest-Supported T-Bar Row",
+             "Banded Chest-Supported T-Bar Row":            return [.back]
+        case "Pendlay Row":                                 return [.back]
+        case "Cable Seated Row":                            return [.back]
+        case "Cable Pull-Over":                             return [.back, .chest]
+
+        // Shoulder accessories
+        case "DB Lateral Raise",
+             "Machine lateral raise",
+             "Cable lateral raise",
+             "Cable Lateral Raise",
+             "Egyptian Lateral Raise":                      return [.shoulders]
+        case "Arnold Press",
+             "DB seated shoulder press",
+             "Machine shoulder press":                      return [.shoulders, .triceps]
+        case "Cable Rope Upright Row":                      return [.shoulders]
+        case "Rope Face Pull", "Reverse Pec Deck":          return [.shoulders, .back]
+
+        // Arm accessories — Biceps
+        case "Supinated EZ Bar Curl",
+             "DB curl", "Cable curl":                       return [.biceps]
+        case "Hammer Curl":                                 return [.biceps]
+        case "EZ Bar Curl 21s":                             return [.biceps]
+        case "Cable Single-Arm Curl":                       return [.biceps]
+        case "Incline DB Curl":                             return [.biceps]
+
+        // Arm accessories — Triceps
+        case "Overhead Tricep Extension",
+             "EZ bar skull crusher":                        return [.triceps]
+        case "Tricep Pressdown":                            return [.triceps]
+        case "EZ Bar Skull Crusher":                        return [.triceps]
+
+        // Leg accessories
+        case "Lying Leg Curl", "Seated leg curl",
+             "Sliding leg curl",
+             "Swiss Ball Leg Curl":                         return [.hamstrings]
+        case "Glute Ham Raise":                             return [.hamstrings, .glutes]
+        case "Leg Press", "Single-Leg Leg Press":           return [.quads, .glutes]
+        case "Leg Extension":                               return [.quads]
+        case "Barbell Hip Thrust or RDL",
+             "Stiff leg deadlift", "Glute bridge":          return [.glutes, .hamstrings]
+        case "Seated Hip Abduction":                        return [.glutes]
+        case "Standing Calf Raise",
+             "Eccentric-Accentuated Standing Calf Raise":   return [.calves]
+
+        // Core
+        case "Hanging Leg Raise",
+             "Captain's chair crunch",
+             "Reverse crunch":                              return [.core]
+        case "Ab Wheel Rollout",
+             "Long-lever plank", "Plank",
+             "Hollow body hold":                            return [.core]
+        case "Cable Crunch",
+             "Bodyweight crunch", "V sit-up":               return [.core]
+        case "Bicycle Crunch":                              return [.core]
+
+        // Traps (grouped under back)
+        case "Hex Bar Shrug",
+             "Smith machine shrug", "DB shrug":             return [.back]
+
+        default:                                            return []
+        }
+    }
+}
+
 enum OneRMFormula: String, CaseIterable, Identifiable {
     case brzycki, epley
 

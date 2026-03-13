@@ -19,6 +19,7 @@ final class Exercise {
     var substitutions: [String]
     var isBodyweight: Bool = false
     var isDumbbell: Bool = false
+    var muscleGroupsRaw: [String] = []
     var activeSubstitution: String?
     var workout: Workout?
 
@@ -38,6 +39,10 @@ final class Exercise {
     var percentageOf: CompoundLift? {
         get { percentageOfRaw.flatMap { CompoundLift(rawValue: $0) } }
         set { percentageOfRaw = newValue?.rawValue }
+    }
+
+    var muscleGroups: [MuscleGroup] {
+        muscleGroupsRaw.compactMap { MuscleGroup(rawValue: $0) }
     }
 
     var displayName: String {
@@ -92,7 +97,8 @@ final class Exercise {
         notes: String = "",
         substitutions: [String] = [],
         isBodyweight: Bool = false,
-        isDumbbell: Bool = false
+        isDumbbell: Bool = false,
+        muscleGroups: [MuscleGroup] = []
     ) {
         self.id = UUID()
         self.name = name
@@ -110,6 +116,7 @@ final class Exercise {
         self.substitutions = substitutions
         self.isBodyweight = isBodyweight
         self.isDumbbell = isDumbbell
+        self.muscleGroupsRaw = muscleGroups.map(\.rawValue)
         self.activeSubstitution = nil
         self.setLogs = []
     }
